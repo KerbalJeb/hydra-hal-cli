@@ -1,4 +1,3 @@
-add_library(cli cli.cpp)
-target_include_directories(cli PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(cli FreeRTOS)
+add_library(cli INTERFACE)
+target_include_directories(cli INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
 add_subdirectory(test)

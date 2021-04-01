@@ -1,5 +1,5 @@
 if (NOT CMAKE_CROSSCOMPILING)
-  add_executable(CliUnitTests mini_stream_tests.cpp cli_tests.cpp parser_tests.cpp)
-  target_link_libraries(CliUnitTests cli gtest_main gmock_main)
+  add_executable(CliUnitTests mini_stream_tests.cpp shell_tests.cpp)
+  target_link_libraries(CliUnitTests cli gtest_main gmock_main FreeRTOS)
   add_test(NAME cli_unit_tests COMMAND ${CMAKE_CURRENT_BINARY_DIR}/CliUnitTests)
 endif ()

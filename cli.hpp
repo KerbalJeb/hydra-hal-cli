@@ -77,7 +77,7 @@ requires(T o, int idx) {
 };
 
 template<typename T> concept SerialIO =
-requires { SerialInput<T> &&SerialOutput<T>; };
+requires { SerialInput<T> && SerialOutput<T>; };
 
 /* todo: auto flush */
 template<class Out, std::size_t N>
@@ -167,13 +167,13 @@ template<typename IO>
 requires SerialIO<IO>
 class mini_istream {
  public:
-  char get();
-  char peek();
-  int get_line(char key, char *buffer, std::size_t buffer_size);
-  int put(char c);
-  bool operator!();
-  mini_istream &operator>>(int &x);
-  mini_istream &operator>>(char &c);
+  char get(){}
+  char peek(){}
+  int get_line(char key, char *buffer, std::size_t buffer_size){}
+  int put(char c){}
+  bool operator!(){}
+  mini_istream &operator>>(int &x){}
+  mini_istream &operator>>(char &c){}
  private:
 };
 
