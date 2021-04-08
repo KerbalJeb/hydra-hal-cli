@@ -45,7 +45,9 @@ public:
       }
     current_cmd_idx = head - 1;
     if (current_cmd_idx < 0)
-      current_cmd_idx = size + current_cmd_idx;
+      {
+        current_cmd_idx = size + current_cmd_idx;
+      }
 
     add_c ('\0');
   }
@@ -57,13 +59,17 @@ public:
       {
         current_cmd_idx--;
         if (current_cmd_idx < 0)
-          current_cmd_idx = size + current_cmd_idx;
+          {
+            current_cmd_idx = size + current_cmd_idx;
+          }
       }
     auto idx = (current_cmd_idx + 1) % size;
 
     current_cmd_idx--;
     if (current_cmd_idx < 0)
-      current_cmd_idx = size + current_cmd_idx;
+      {
+        current_cmd_idx = size + current_cmd_idx;
+      }
     return &internal_storage[idx];
   }
 
@@ -207,7 +213,9 @@ private:
         break;
       default:
         if (line_end >= buffer_end)
-          break;
+          {
+            break;
+          }
         IO::putc (c);
         *line_end++ = c;
         cursor++;
@@ -219,7 +227,9 @@ private:
   handle_escape_sequence ()
   {
     if (IO::peek (0) != '[')
-      return;
+      {
+        return;
+      }
 
     int c;
     while ((c = IO::getc ()) != -1)
@@ -284,7 +294,9 @@ private:
   backspace ()
   {
     if (cursor <= line_start)
-      return;
+      {
+        return;
+      }
     char *start = cursor - 1;
     while (start < line_end)
       {
