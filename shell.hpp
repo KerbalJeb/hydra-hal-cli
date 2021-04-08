@@ -210,6 +210,7 @@ private:
         cin.put (line_start);
         history.add_cmd (line_start);
         line_end = line_buffer;
+        cursor = line_buffer;
         break;
       default:
         if (line_end >= buffer_end)
