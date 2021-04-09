@@ -192,6 +192,12 @@ template <class Out, std::size_t N = 8>
 requires SerialOutput<Out> class mini_ostream
 {
 public:
+  inline void
+  flush ()
+  {
+    Out::flush ();
+  }
+
   inline mini_ostream &
   operator<< (format::cmd cmd)
   {
@@ -345,23 +351,6 @@ public:
         char c = *s++;
         put (c);
       }
-  }
-
-  bool
-  operator! ()
-  {
-    return false;
-  }
-  mini_istream &
-  operator>> (int &x)
-  {
-    return *this;
-  }
-
-  mini_istream &
-  operator>> (char &c)
-  {
-    return *this;
   }
 
 private:

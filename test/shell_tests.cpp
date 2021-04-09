@@ -22,7 +22,8 @@ protected:
   {
     mock_serial::clear ();
   }
-  cli::shell<mock_serial, ring_buffer<char, 32>> shell{"$", "Welcome Message"};
+  cli::shell<mock_serial, ring_buffer<char, 32> > shell{ "$",
+                                                         "Welcome Message" };
   char buffer[256];
 };
 
@@ -60,10 +61,10 @@ TEST_F (ShellTests, get_input_after_newline)
   EXPECT_EQ (return_value, 0);
 
   return_value = cin.get_line (' ', buffer, 32);
-  EXPECT_STREQ (buffer, "42!\n");
+  EXPECT_STREQ (buffer, "42!");
   EXPECT_EQ (return_value, 0);
 
-  EXPECT_EQ (mock_serial::ostring, "hello world 42!\n\r$");
+  EXPECT_EQ (mock_serial::ostring, "hello world 42!\n\r");
 }
 
 TEST_F (ShellTests, backspace)
@@ -95,8 +96,7 @@ TEST_F (ShellTests, buffer_overflow)
   shell.receive ();
   auto &cin = shell.cin;
   int return_value = cin.get_line ('\n', buffer, 256);
-  EXPECT_STREQ (buffer, "very_long_word_that_will_overfl"
-                        "");
+  EXPECT_STREQ (buffer, "very_long_word_that_will_over");
   EXPECT_EQ (return_value, 0);
 }
 
@@ -161,19 +161,19 @@ TEST_F (ShellTests, multiple_cmd_history)
 
 TEST_F (ShellTests, cmd_history_up)
 {
-std::string text = "cmd1\ncmd2\ncmd3\n";
-mock_serial::istring = text;
-shell.receive ();
-auto &cin = shell.cin;
-int return_value;
-(void)cin.get_line ('\n', buffer, 32);
-(void)cin.get_line ('\n', buffer, 32);
+  std::string text = "cmd1\ncmd2\ncmd3\n";
+  mock_serial::istring = text;
+  shell.receive ();
+  auto &cin = shell.cin;
+  int return_value;
+  (void)cin.get_line ('\n', buffer, 32);
+  (void)cin.get_line ('\n', buffer, 32);
 
-mock_serial::istring
-= std::string{ cli::ansi_cmd::down } + cli::ansi_cmd::down + cli::ansi_cmd::up +"\n";
-shell.receive ();
+  mock_serial::istring = std::string{ cli::ansi_cmd::down }
+                         + cli::ansi_cmd::down + cli::ansi_cmd::up + "\n";
+  shell.receive ();
 
-return_value = cin.get_line ('\n', buffer, 32);
-EXPECT_STREQ (buffer, "cmd3");
-EXPECT_EQ (return_value, 0);
+  return_value = cin.get_line ('\n', buffer, 32);
+  EXPECT_STREQ (buffer, "cmd3");
+  EXPECT_EQ (return_value, 0);
 }

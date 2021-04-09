@@ -176,7 +176,7 @@ private:
       case '\r':
       case '\n':
         IO::puts ("\n\r");
-        IO::puts (prompt);
+//        IO::puts (prompt);
         /* add current buffer to cin */
         *line_end++ = '\n';
         *line_end = '\0';
@@ -186,7 +186,7 @@ private:
         cursor = line_buffer;
         break;
       default:
-        if (line_end >= buffer_end)
+        if (line_end >= buffer_end - 2)
           {
             break;
           }

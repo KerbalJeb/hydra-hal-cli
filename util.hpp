@@ -124,9 +124,10 @@ public:
     return this->size () == 0;
   }
 
-  bool is_full()
+  bool
+  is_full ()
   {
-    return this->size() == N;
+    return this->size () == N;
   }
 
   void
@@ -152,9 +153,9 @@ public:
   {
     T value{};
     if (xQueueReceive (queue, &value, max_wait_time) != pdTRUE)
-    {
-      return {};
-    }
+      {
+        return {};
+      }
     return value;
   }
 
@@ -162,10 +163,10 @@ public:
   peek ()
   {
     T value{};
-    if (xQueuePeek (queue, &value, max_wait_time))
-    {
-      return {};
-    }
+    if (xQueuePeek (queue, &value, max_wait_time) != pdTRUE)
+      {
+        return {};
+      }
     return value;
   }
 
@@ -174,5 +175,5 @@ private:
   static constexpr TickType_t max_wait_time = portMAX_DELAY;
   StaticQueue_t static_queue{};
   QueueHandle_t queue{};
-  uint8_t buffer[item_size]{};
+  uint8_t buffer[item_size * N]{};
 };
