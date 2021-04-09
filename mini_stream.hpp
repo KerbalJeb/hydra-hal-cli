@@ -6,9 +6,10 @@
 /**********************************************************************
  * Includes
  **********************************************************************/
+#include "util.hpp"
+#include <cmath>
 #include <concepts>
 #include <optional>
-#include <cmath>
 
 /**********************************************************************
  * Concepts
@@ -25,12 +26,10 @@ template <typename T> concept SerialInput = requires (T o, int idx)
 {
   {
     T::getc ()
-  }
-  ->std::convertible_to<int>;
+    } -> std::convertible_to<int>;
   {
     T::peek (idx)
-  }
-  ->std::convertible_to<int>;
+    } -> std::convertible_to<int>;
 };
 
 template <typename T> concept SerialIO = requires
@@ -288,7 +287,8 @@ private:
   }
 };
 
-template <typename IO> requires SerialIO<IO> class mini_istream
+template <class IO, class BufferType>
+requires SerialIO<IO> &&Queue<BufferType, char> class mini_istream
 {
 public:
   std::optional<char>
@@ -316,12 +316,16 @@ public:
     while (true)
       {
         auto c = r_buffer.pop ();
-        if (*c == key || !c.has_value ())
-          break;
+        if (*c == key || !c.has_value () || *c == '\n')
+          {
+            break;
+          }
         *buffer++ = *c;
         count++;
         if (count >= buffer_size)
-          return -1;
+          {
+            return -1;
+          }
       }
     *buffer = '\0';
     return 0;
@@ -353,6 +357,7 @@ public:
   {
     return *this;
   }
+
   mini_istream &
   operator>> (char &c)
   {
@@ -360,6 +365,6 @@ public:
   }
 
 private:
-  ring_buffer<char, 32> r_buffer;
+  BufferType r_buffer;
 };
 }

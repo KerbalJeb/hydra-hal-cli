@@ -112,58 +112,30 @@ private:
   bool full;
 };
 
-template <class IO> requires SerialIO<IO> class shell
+template <class IO, class StreamBuffer>
+requires SerialIO<IO> &&Queue<StreamBuffer, char> class shell
 {
-private:
-  struct cli_io
-  {
-    static inline void
-    puts (const char *s)
-    {
-      IO::getc (s);
-    }
-    static inline void
-    putc (const char c)
-    {
-      IO::putc (c);
-    }
-    static inline int
-    getc ()
-    {
-      return IO::getc ();
-    }
-    static inline int
-    peek (int idx)
-    {
-      return IO::peek (idx);
-    }
-    static inline void
-    flush ()
-    {
-      IO::flush ();
-    }
-  };
-
 public:
   /**
    * @brief Used stream the input into an object
    */
 
-  mini_istream<cli_io> cin;
+  mini_istream<IO, StreamBuffer> cin;
   /**
    * @brief Lets the application print to the shell
    */
-  mini_ostream<cli_io> cout;
+  mini_ostream<IO> cout;
 
-  /**
-   * @brief Needs to be called every time a new char is received
-   */
+  const char *prompt;
 
   explicit shell (const char *prompt, const char *welcome_message)
       : prompt (prompt), welcome_message (welcome_message)
   {
   }
 
+  /**
+ * @brief Needs to be called every time a new char is received
+ */
   void
   receive ()
   {
@@ -182,6 +154,7 @@ public:
   connected ()
   {
     /* Print welcome message */
+    IO::puts ("\n\r");
     IO::puts (welcome_message);
     IO::puts ("\n\r");
     IO::puts (prompt);
@@ -328,7 +301,6 @@ private:
   const char *buffer_end = &line_buffer[31];
   const char *line_start = line_buffer;
   cmd_history history{};
-  const char *prompt;
   const char *welcome_message;
 };
 } // namespace cli

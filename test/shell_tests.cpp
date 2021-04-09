@@ -6,6 +6,7 @@
  **********************************************************************/
 #include "mock_serial.hpp"
 #include "shell.hpp"
+#include "util.hpp"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
@@ -21,7 +22,7 @@ protected:
   {
     mock_serial::clear ();
   }
-  cli::shell<mock_serial> shell{"$", "Welcome Message"};
+  cli::shell<mock_serial, ring_buffer<char, 32>> shell{"$", "Welcome Message"};
   char buffer[256];
 };
 
@@ -40,7 +41,7 @@ TEST_F (ShellTests, echo_alphanumeric)
 TEST_F (ShellTests, welcome_message)
 {
   shell.connected ();
-  EXPECT_EQ (mock_serial::ostring, "Welcome Message\n\r$");
+  EXPECT_EQ (mock_serial::ostring, "\n\rWelcome Message\n\r$");
 }
 
 TEST_F (ShellTests, get_input_after_newline)
