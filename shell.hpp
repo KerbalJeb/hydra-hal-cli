@@ -163,7 +163,6 @@ private:
       case '\r':
       case '\n':
         IO::puts ("\n\r");
-        //        IO::puts (prompt);
         /* add current buffer to cin */
         *line_end = '\0';
         history.add_cmd (line_start);
