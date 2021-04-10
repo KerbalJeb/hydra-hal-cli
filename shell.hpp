@@ -7,23 +7,10 @@
  * Includes
  **********************************************************************/
 #include "mini_stream.hpp"
+#include <algorithm>
 #include <cctype>
 #include <concepts>
 #include <cstring>
-
-/**********************************************************************
- * Concepts
- **********************************************************************/
-
-template <typename T> concept ShellConfig = requires
-{
-  {
-    T::welcome_msg
-    } -> std::convertible_to<const char *const>;
-  {
-    T::prompt
-    } -> std::convertible_to<const char *const>;
-};
 
 /**********************************************************************
  * Templates
@@ -134,8 +121,8 @@ public:
   }
 
   /**
- * @brief Needs to be called every time a new char is received
- */
+   * @brief Needs to be called every time a new char is received
+   */
   void
   receive ()
   {
@@ -176,12 +163,13 @@ private:
       case '\r':
       case '\n':
         IO::puts ("\n\r");
-//        IO::puts (prompt);
+        //        IO::puts (prompt);
         /* add current buffer to cin */
+        *line_end = '\0';
+        history.add_cmd (line_start);
         *line_end++ = '\n';
         *line_end = '\0';
         cin.put (line_start);
-        history.add_cmd (line_start);
         line_end = line_buffer;
         cursor = line_buffer;
         break;
@@ -232,29 +220,11 @@ private:
                 break;
               case 'A':
                 cmd = history.get_cmd_up ();
-                if (!cmd.has_value ())
-                  {
-                    break;
-                  }
-                IO::puts (*cmd);
-                (void)std::strcpy (line_buffer, *cmd);
-                clear_line ();
-                len = std::strlen (*cmd);
-                cursor += len;
-                line_end += len;
+                set_line(cmd);
                 break;
               case 'B':
                 cmd = history.get_cmd_down ();
-                if (!cmd.has_value ())
-                  {
-                    break;
-                  }
-                IO::puts (*cmd);
-                (void)std::strcpy (line_buffer, *cmd);
-                clear_line ();
-                len = std::strlen (*cmd);
-                cursor += len;
-                line_end += len;
+                set_line(cmd);
                 break;
               default:
                 break;
@@ -262,6 +232,22 @@ private:
             break;
           }
       }
+  }
+
+  void
+  set_line (std::optional<const char *> line_str)
+  {
+    if (!line_str.has_value ())
+      {
+        return;
+      }
+    clear_line ();
+    std::size_t len = std::strlen (*line_str);
+    (void)std::copy_n (*line_str, len, line_buffer);
+    line_buffer[len+1] = '\0';
+    IO::puts (line_buffer);
+    cursor += len;
+    line_end += len;
   }
 
   void
@@ -291,6 +277,8 @@ private:
   clear_line ()
   {
     IO::puts (ansi_cmd::clear_line);
+    IO::puts ("\x1b[99D");
+    IO::puts (prompt);
     cursor = line_buffer;
     line_end = line_buffer;
   }

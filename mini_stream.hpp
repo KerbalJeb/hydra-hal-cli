@@ -67,6 +67,7 @@ enum cmd
 {
   endl,
   reset,
+  flush,
 };
 constexpr auto bold = "\x1B[1m";
 constexpr auto underscore = "\x1B[4m";
@@ -106,88 +107,6 @@ constexpr auto white = "\x1B[47m";
 namespace cli
 {
 
-template <typename T, std::size_t N> class ring_buffer
-{
-public:
-  [[nodiscard]] bool
-  is_empty () const
-  {
-    return !full && (head == tail);
-  }
-
-  void
-  clear ()
-  {
-    full = false;
-    head = 0;
-    tail = 0;
-  }
-
-  [[nodiscard]] bool
-  is_full () const
-  {
-    return full;
-  }
-
-  [[nodiscard]] std::size_t
-  size () const
-  {
-    if (full)
-      {
-        return N;
-      }
-    if (head >= tail)
-      {
-        return head - tail;
-      }
-    return N + head - tail;
-  }
-
-  void
-  push (T val)
-  {
-    internal_storage[head] = val;
-    if (full)
-      {
-        tail = (tail + 1) % N;
-      }
-    head = (head + 1) % N;
-    full = (tail == head);
-  }
-
-  std::optional<T>
-  pop ()
-  {
-    if (is_empty ())
-      return {};
-
-    auto val = internal_storage[tail];
-    full = false;
-    tail = (tail + 1) % N;
-    return val;
-  }
-
-  [[nodiscard]] std::optional<T>
-  peek (std::size_t idx) const
-  {
-    if (size () >= idx)
-      return {};
-    return internal_storage[(head + idx) % N];
-  }
-
-  [[nodiscard]] std::optional<T>
-  peek () const
-  {
-    return peek (0);
-  }
-
-protected:
-  T internal_storage[N]{};
-  std::size_t head = 0;
-  std::size_t tail = 0;
-  bool full = false;
-};
-
 template <class Out, std::size_t N = 8>
 requires SerialOutput<Out> class mini_ostream
 {
@@ -206,9 +125,10 @@ public:
       {
       case format::endl:
         *this << "\n\r";
-        Out::flush ();
       case format::reset:
         *this << "\x1B[0m" << format::dec;
+      case format::flush:
+        Out::flush();
         break;
       }
     return *this;
