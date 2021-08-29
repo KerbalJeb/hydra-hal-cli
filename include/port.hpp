@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <stm32f0xx.h>
 
-namespace hh::port {
+namespace hh::portable {
 using pin_t = std::uint32_t;
 using pin_state_t = std::uint32_t;
 using register_t = std::uint32_t;

@@ -1,63 +1,23 @@
 cmake_minimum_required (VERSION 3.20)
-project ("Arm Cortex-M Base" C CXX ASM)
-option(CLONE_TO_LOCAL OFF)
-
-# C++ Standard, GNU extensions disabled
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_INTERPROCEDURAL_OPTIMIZATION  TRUE)
-
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
-
-# Configuration Director for config files for third party libraries (ex. FreeRTOS)
-set(CONFIG_DIR config)
-file (TO_CMAKE_PATH $ENV{HOMEDRIVE}$ENV{HOMEPATH}/repos LOCAL_REPO_DIR)
-
-# Get TinyUSB
-set(TINYUSB_VERSION 0.10.1)
-include(TinyUSB)
-
-# Get FreeRTOS
-set(FREERTOS_VERSION V10.4.4)
-include(FreeRTOS)
-
-# Get CMSIS
-set(CMSIS_VERSION 5.8.0)
-include(cmsis)
-
-# Executable ELF File
-set(EXECUTABLE_NAME bin)
-add_executable (${EXECUTABLE_NAME}.elf
-                app/main.cpp
-                app/startup.cpp
-                app/vectors.cpp
-                )
-
-# Link Options/Libs
-target_link_libraries(${EXECUTABLE_NAME}.elf freertos::freertos cmsis::cmsis)
-target_link_options(${EXECUTABLE_NAME}.elf
-                    PRIVATE
-                      # Set custom linker script
-                      # todo make configuration file that picks up start and end of RAM/ROM from toolchain file
-                      -T ${CMAKE_SOURCE_DIR}/LinkerScript.ld
-                      # Link for no system calls
-                      --specs=nano.specs
-                      # Print memory usage and generate map file
-                      -Wl,--print-memory-usage,-Map=${PROJECT_BINARY_DIR}/map.map
-                    )
-
-# Use objcopy to create bin, hex and asm files
-set (HEX_FILE ${PROJECT_BINARY_DIR}/${EXECUTABLE_NAME}.hex)
-set (BIN_FILE ${PROJECT_BINARY_DIR}/${EXECUTABLE_NAME}.bin)
-set (ASM_FILE ${PROJECT_BINARY_DIR}/${EXECUTABLE_NAME}.s)
-
-add_custom_command (TARGET ${EXECUTABLE_NAME}.elf POST_BUILD
-                    COMMAND ${CMAKE_OBJCOPY} -Oihex $<TARGET_FILE:${EXECUTABLE_NAME}.elf> ${HEX_FILE}
-                    COMMAND ${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:${EXECUTABLE_NAME}.elf> ${BIN_FILE}
-                    COMMAND ${CMAKE_OBJDUMP} -d -C -S $<TARGET_FILE:${EXECUTABLE_NAME}.elf> > ${ASM_FILE}
-                    )
+project ("Hydra Hal Peripheral Drivers" LANGUAGES C CXX ASM)
+list (APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 # Doxygen Documentation Target
-add_subdirectory(docs)
+add_subdirectory (docs)
 
+if (NOT ${CMAKE_CROSSCOMPILING})
+  set(MCU_LINE stm32f0)
+  add_definitions(-DSTM32F042x6)
+endif ()
+
+# Get CMSIS
+set (CMSIS_VERSION 5.8.0)
+include (cmsis)
+
+add_library (hal_peripheral src/gpio.cpp)
+target_include_directories (hal_peripheral PUBLIC include)
+target_link_libraries (hal_peripheral cmsis::cmsis)
+target_compile_features(hal_peripheral PRIVATE cxx_std_17)
+add_library(hh::peripheral ALIAS hal_peripheral)
+
+add_subdirectory (test)
