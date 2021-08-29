@@ -1,7 +1,8 @@
-/** @file port.hpp
-*   @brief Created on 2021-08-28 by Ben
-*/
+/// @file stm32f0xx_port.h
+/// @brief Created on 2021-08-28 by Ben
+
 #pragma once
+
 #include <cstdint>
 #include <stm32f0xx.h>
 
