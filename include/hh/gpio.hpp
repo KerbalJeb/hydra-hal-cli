@@ -8,28 +8,31 @@
 
 namespace hh::gpio {
 
+/// \brief The gpio isr callback function pointer type
 using callback_t = void (*)(portable::pin_t);
 
-struct gpio_config_t {
-  enum class io_mode_t {
-    input = portable::GPIO_INPUT,
-    output = portable::GPIO_OUTPUT,
-  };
-  enum class pull_mode_t {
-    none = portable::GPIO_PULL_NONE,
-    up = portable::GPIO_PULL_UP,
-    down = portable::GPIO_PULL_DOWN,
-  };
-  enum class output_mode_t {
-    push_pull = portable::PUSH_PULL_OUTPUT,
-    open_drain = portable::OPEN_DRAIN_OUTPUT,
-  };
+enum class io_mode_t {
+  input = portable::GPIO_INPUT,
+  output = portable::GPIO_OUTPUT,
+};
+enum class pull_mode_t {
+  none = portable::GPIO_PULL_NONE,
+  up = portable::GPIO_PULL_UP,
+  down = portable::GPIO_PULL_DOWN,
+};
+enum class output_mode_t {
+  push_pull = portable::PUSH_PULL_OUTPUT,
+  open_drain = portable::OPEN_DRAIN_OUTPUT,
+};
 
+/// \brief Portable GPIO configuration struct
+struct gpio_config_t {
   io_mode_t io_mode;
   pull_mode_t pull_mode;
   output_mode_t output_mode;
 };
 
+/// \brief Portable ISR trigger condition type
 struct isr_condition {
   enum class edge {
     rising,
@@ -48,7 +51,7 @@ struct isr_condition {
 /// where the nth bit corresponds to the nth pin on the GPIO port.
 /// \param config The configuration to apply to all pins
 /// \return The status of the operation
-status config(portable::gpio_ptr port, const portable::pin_t& pins, const gpio_config_t& config);
+status config(portable::gpio_ptr port, portable::pin_t pins, const gpio_config_t& config);
 
 /// \brief Initializes one or more GPIO pins in alternate function mode
 /// \pre The clock to the GPIO port being used must be enabled.
@@ -61,7 +64,7 @@ status config(portable::gpio_ptr port, const portable::pin_t& pins, const gpio_c
 /// \param config The configuration to apply to all pins
 /// \param af_config The alternate function configuration, device dependant
 /// \return The status of the operation
-status config(portable::gpio_ptr port, const portable::pin_t& pins, const gpio_config_t& config,
+status config(portable::gpio_ptr port, portable::pin_t pins, const gpio_config_t& config,
         const portable::gpio_af_config_t& af_config);
 
 /// \brief Sets a callback for the gpio pin(s) isr
@@ -73,7 +76,7 @@ status config(portable::gpio_ptr port, const portable::pin_t& pins, const gpio_c
 /// \param condition The ISR configuration
 /// \param callback The callback function to register
 /// \return The status of the operation
-status set_isr_callback(portable::gpio_ptr port, const portable::pin_t& pins, const isr_condition& condition,
+status set_isr_callback(portable::gpio_ptr port, portable::pin_t pins, const isr_condition& condition,
         callback_t callback);
 
 /// \brief Sets the state of one or more output pins
@@ -84,7 +87,7 @@ status set_isr_callback(portable::gpio_ptr port, const portable::pin_t& pins, co
 ///// where the nth bit corresponds to the nth pin on the GPIO port.
 /// \param state The new states of the pins as an unsigned int, where the nth bit corresponds to the nth pin
 /// \return The status of the operation
-status write(portable::gpio_ptr port, const portable::pin_t& pins, portable::pin_state_t state);
+status write(portable::gpio_ptr port, portable::pin_t pins, portable::pin_state_t state);
 
 /// \brief Sets one or more output pins to high
 /// \pre The pin(s) must be configured as an output pin
@@ -93,7 +96,7 @@ status write(portable::gpio_ptr port, const portable::pin_t& pins, portable::pin
 /// \param pins An unsigned int with bits corresponding pins to configure are set,
 ///// where the nth bit corresponds to the nth pin on the GPIO port.
 /// \return The status of the operation
-status set(portable::gpio_ptr port, const portable::pin_t& pins);
+status set(portable::gpio_ptr port, portable::pin_t pins);
 
 /// \brief Sets one or more output pins to low
 /// \pre The pin(s) must be configured as an output pin
@@ -102,14 +105,14 @@ status set(portable::gpio_ptr port, const portable::pin_t& pins);
 /// \param pins An unsigned int with bits corresponding pins to configure are set,
 ///// where the nth bit corresponds to the nth pin on the GPIO port.
 /// \return The status of the operation
-status reset(portable::gpio_ptr port, const portable::pin_t& pin);
+status reset(portable::gpio_ptr port, portable::pin_t pin);
 
 /// \brief Read the state of one or more gpio pins
 /// \param port A pointer to the GPIO port hardware registers
 /// \param pins An unsigned int with bits corresponding pins to read are set,
 ///// where the nth bit corresponds to the nth pin on the GPIO port.
 /// \return The states of the pins as an unsigned int, where the nth bit corresponds to the nth pin
-portable::pin_state_t read(portable::gpio_ptr port, const portable::pin_t& pins);
+portable::pin_state_t read(portable::gpio_ptr port, portable::pin_t pins);
 
 /// \brief Read from a gpio register
 /// \param reg A pointer to the register

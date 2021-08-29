@@ -1,5 +1,6 @@
 # todo: setup CTest
 include(FetchContent)
+project(Tests)
 
 set(CATCH2_VERSION v3.0.0-preview3)
 FetchContent_Declare(catch2
@@ -7,16 +8,13 @@ FetchContent_Declare(catch2
                      GIT_TAG "${CATCH2_VERSION}"
                      )
 FetchContent_MakeAvailable(catch2)
-
 list (APPEND CMAKE_MODULE_PATH "${catch2_SOURCE_DIR}/extras")
+enable_testing()
 
-
-add_library(test_sources OBJECT test_gpio.cpp)
-target_link_libraries(test_sources Catch2::Catch2 hh::peripheral)
-
-add_executable(tests test_main.cpp)
-target_link_libraries(tests PRIVATE test_sources)
+add_executable(test_gpio test_gpio.cpp)
+target_link_libraries(test_gpio Catch2::Catch2WithMain hh::peripheral)
 
 include(CTest)
 include(Catch)
-catch_discover_tests(tests)
+
+catch_discover_tests(test_gpio)
