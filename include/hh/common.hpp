@@ -2,6 +2,8 @@
 /// @brief Created on 2021-08-28 by Ben
 
 #pragma once
+#include <hh/portable/peripheral_port.hpp>
+#include <hh/hal_assert.hpp>
 
 namespace hh{
 /// \brief A status return code
@@ -16,9 +18,9 @@ enum class status {
 /// \param reg The register
 /// \param value The value to write
 /// \param msk The bits to write to
-inline void write_with_msk(volatile std::uint32_t& reg, std::uint32_t value, std::uint32_t msk)
+inline void write_with_msk(volatile portable::register_t& reg, portable::register_t value, portable::register_t msk)
 {
-//    assert((value&msk) == value);
+    assert((value&msk) == value);
     auto reg_value = reg;
     // Set bits
     reg_value |= value;

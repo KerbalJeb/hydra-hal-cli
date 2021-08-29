@@ -15,7 +15,7 @@ set (CMSIS_VERSION 5.8.0)
 include (cmsis)
 
 if (${MCU_LINE} STREQUAL stm32f0)
-  set(PORTABLE_DIR "portable/vendor/st/f0")
+  set(PORTABLE_DIR "portable/vendor/st")
 else()
   message(FATAL_ERROR "No valid mcu line set in MCU_LINE var (${MCU_LINE})")
 endif ()
