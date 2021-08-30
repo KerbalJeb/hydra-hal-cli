@@ -7,10 +7,31 @@
 #include <stm32f0xx.h>
 
 namespace hh::portable {
+
+/// \section GPIO defs
+
+enum pin_enumeration{
+  pin_0 = 1 << 0,
+  pin_1 = 1 << 1,
+  pin_3 = 1 << 3,
+  pin_4 = 1 << 4,
+  pin_5 = 1 << 5,
+  pin_6 = 1 << 6,
+  pin_7 = 1 << 7,
+  pin_8 = 1 << 8,
+  pin_9 = 1 << 9,
+  pin_10 = 1 << 10,
+  pin_11 = 1 << 11,
+  pin_12 = 1 << 12,
+  pin_13 = 1 << 13,
+  pin_14 = 1 << 14,
+  pin_15 = 1 << 15,
+};
+
 using pin_t = std::uint32_t;
 using pin_state_t = std::uint32_t;
 using register_t = std::uint32_t;
-using gpio_ptr = GPIO_TypeDef*;
+using gpio_port_t = GPIO_TypeDef*;
 using gpio_af_config_t = std::uint32_t;
 
 // GPIO mode degs

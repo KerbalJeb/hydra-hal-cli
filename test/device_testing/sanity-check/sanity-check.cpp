@@ -1,9 +1,16 @@
 #include <stm32f042x6.h>
+#include <hh/gpio.hpp>
 
 int main()
 {
-    RCC->AHBENR |= RCC_AHBENR_GPIOBEN;
-    GPIOB->MODER = 1;
-    GPIOB->ODR = 1;
+    hh::gpio::enable_port(GPIOA);
+    hh::gpio::gpio_config_t gpio_config{
+            hh::gpio::io_mode_t::input,
+            hh::gpio::pull_mode_t::none,
+            hh::gpio::output_mode_t::push_pull
+    };
+    hh::gpio::config(GPIOB, hh::portable::pin_0, gpio_config);
+    hh::gpio::write(GPIOB, hh::portable::pin_0, 0x1);
+
     while (true);
 }

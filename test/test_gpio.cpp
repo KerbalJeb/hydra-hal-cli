@@ -1,8 +1,10 @@
 /// \file test_gpio.cpp
 /// \brief Created on 2021-08-28 by Ben
+/// \todo Add mock cmsis device file
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
+#include <tuple>
 
 #include <hh/gpio.hpp>
 
@@ -66,4 +68,94 @@ TEST_CASE("gpio multi pin config", "[gpio][config]")
     CHECK(dummy_port.OSPEEDR==0);
     CHECK(dummy_port.OTYPER==expected_otyper);
     CHECK(dummy_port.PUPDR==expected_pull);
+}
+
+TEST_CASE("gpio write", "[gpio][write]")
+{
+    GPIO_TypeDef dummy_port{};
+    using namespace hh::portable;
+    auto[initial_value, pin_msk, pin_values, expected_value] = GENERATE(
+            std::tuple<int, int, int, int>{0x0000, pin_0, pin_0, 0x001}, // Basic
+            std::tuple<int, int, int, int>{0x0040, pin_15, pin_15, 0x8040}, // non zero
+            std::tuple<int, int, int, int>{0xffff, pin_0, 0, 0xfffe}, // bit clear
+            std::tuple<int, int, int, int>{0x0000, pin_0 | pin_5, pin_5, pin_5}, // multi pin
+            std::tuple<int, int, int, int>{0xffff, pin_0 | pin_5, pin_5, 0xfffe} // multi pin
+    );
+
+    CAPTURE(initial_value, expected_value, pin_msk, pin_values);
+
+    dummy_port.ODR = initial_value;
+    hh::gpio::write(&dummy_port, pin_msk, pin_values);
+
+    CHECK(dummy_port.ODR==expected_value);
+    CHECK(dummy_port.MODER==0);
+    CHECK(dummy_port.AFR[0]==0);
+    CHECK(dummy_port.AFR[1]==0);
+    CHECK(dummy_port.BRR==0);
+    CHECK(dummy_port.BSRR==0);
+    CHECK(dummy_port.IDR==0);
+    CHECK(dummy_port.LCKR==0);
+    CHECK(dummy_port.OSPEEDR==0);
+    CHECK(dummy_port.OTYPER==0);
+    CHECK(dummy_port.PUPDR==0);
+}
+
+TEST_CASE("gpio write high", "[gpio][write]")
+{
+    GPIO_TypeDef dummy_port{};
+    using namespace hh::portable;
+
+    auto pins_to_set = GENERATE(pin_0, pin_15 | pin_0, pin_5 | pin_6);
+
+    hh::gpio::set(&dummy_port, pins_to_set);
+
+    CHECK(dummy_port.ODR==0);
+    CHECK(dummy_port.MODER==0);
+    CHECK(dummy_port.AFR[0]==0);
+    CHECK(dummy_port.AFR[1]==0);
+    CHECK(dummy_port.BRR==0);
+    CHECK(dummy_port.BSRR==pins_to_set << 15);
+    CHECK(dummy_port.IDR==0);
+    CHECK(dummy_port.LCKR==0);
+    CHECK(dummy_port.OSPEEDR==0);
+    CHECK(dummy_port.OTYPER==0);
+    CHECK(dummy_port.PUPDR==0);
+}
+
+TEST_CASE("gpio write low", "[gpio][write]")
+{
+    GPIO_TypeDef dummy_port{};
+    using namespace hh::portable;
+
+    auto pins_to_set = GENERATE(pin_0, pin_15 | pin_0, pin_5 | pin_6);
+
+    hh::gpio::reset(&dummy_port, pins_to_set);
+
+    CHECK(dummy_port.ODR==0);
+    CHECK(dummy_port.MODER==0);
+    CHECK(dummy_port.AFR[0]==0);
+    CHECK(dummy_port.AFR[1]==0);
+    CHECK(dummy_port.BRR==0);
+    CHECK(dummy_port.BSRR==pins_to_set);
+    CHECK(dummy_port.IDR==0);
+    CHECK(dummy_port.LCKR==0);
+    CHECK(dummy_port.OSPEEDR==0);
+    CHECK(dummy_port.OTYPER==0);
+    CHECK(dummy_port.PUPDR==0);
+}
+
+TEST_CASE("gpio read", "[gpio][write]")
+{
+    GPIO_TypeDef dummy_port{};
+    using namespace hh::portable;
+
+    auto[pin_values, pins_to_read] = GENERATE(
+            std::tuple<int, int>{0x0001, pin_0},
+            std::tuple<int, int>{0x8001, pin_0 | pin_15},
+            std::tuple<int, int>{0x0001, pin_0 | pin_15}
+    );
+
+    dummy_port.IDR = pin_values;
+    auto ret_value = hh::gpio::read(&dummy_port, pins_to_read);
+    CHECK(ret_value == (pin_values & pins_to_read));
 }

@@ -29,4 +29,9 @@ inline void write_with_msk(volatile portable::register_t& reg, portable::registe
     reg = reg_value;
 }
 
+inline void set_bits(volatile portable::register_t& reg, portable::register_t value){
+    auto reg_value = reg;
+    reg_value |= value;
+    reg = reg_value;
+}
 }

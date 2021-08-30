@@ -19,7 +19,7 @@ add_executable (${EXECUTABLE_NAME}.elf
                 )
 
 # Link Options/Libs
-target_link_libraries(${EXECUTABLE_NAME}.elf cmsis::cmsis)
+target_link_libraries(${EXECUTABLE_NAME}.elf cmsis::cmsis hh::peripheral)
 target_link_options(${EXECUTABLE_NAME}.elf
                     PRIVATE
                     # Set custom linker script
