@@ -27,7 +27,11 @@ use_package(
 )
 
 add_library(cmsis_device INTERFACE)
-target_include_directories(cmsis_device INTERFACE ${cmsis_device_SOURCE_DIR}/Include)
+if (USE_MOCKS)
+  target_include_directories(cmsis_device INTERFACE ${CMAKE_SOURCE_DIR}/test/mocks)
+else()
+  target_include_directories(cmsis_device INTERFACE ${cmsis_device_SOURCE_DIR}/Include)
+endif ()
 add_library(cmsis::device ALIAS cmsis_device)
 
 

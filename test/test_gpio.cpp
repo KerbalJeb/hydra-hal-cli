@@ -1,6 +1,5 @@
 /// \file test_gpio.cpp
 /// \brief Created on 2021-08-28 by Ben
-/// \todo Add mock cmsis device file
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
@@ -158,4 +157,26 @@ TEST_CASE("gpio read", "[gpio][write]")
     dummy_port.IDR = pin_values;
     auto ret_value = hh::gpio::read(&dummy_port, pins_to_read);
     CHECK(ret_value == (pin_values & pins_to_read));
+}
+
+TEST_CASE("gpio port enable", "[gpio][config]")
+{
+    GPIO_TypeDef dummy_ports[6];
+    using namespace hh::portable;
+    RCC_TypeDef dummy_rcc{};
+    RCC = &dummy_rcc;
+    GPIOA = &dummy_ports[0];
+    GPIOB = &dummy_ports[1];
+    GPIOC = &dummy_ports[2];
+    GPIOF = &dummy_ports[5];
+
+    auto [port, expected] = GENERATE(
+        std::tuple{GPIOA, RCC_AHBENR_GPIOAEN},
+        std::tuple{GPIOB, RCC_AHBENR_GPIOBEN},
+        std::tuple{GPIOC, RCC_AHBENR_GPIOCEN},
+        std::tuple{GPIOF, RCC_AHBENR_GPIOFEN}
+    );
+
+    hh::gpio::enable_port(port);
+    CHECK(RCC->AHBENR == expected);
 }
