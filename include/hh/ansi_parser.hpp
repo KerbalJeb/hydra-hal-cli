@@ -2,7 +2,6 @@
 /// \brief Created on 2021-08-30 by Ben
 
 #pragma once
-#include <hh/fixed_sv_set.hpp>
 #include <cstdint>
 #include <cctype>
 

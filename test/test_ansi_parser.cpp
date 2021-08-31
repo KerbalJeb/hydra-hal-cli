@@ -29,3 +29,20 @@ TEST_CASE("ansi parser", "[ansi]")
         CHECK(p.code().params[i]==expected.params[i]);
     }
 }
+
+TEST_CASE("ansi parser invalid", "[ansi]")
+{
+    auto str = GENERATE(
+            std::string{"a"},
+            std::string{"["},
+            std::string{"[5;A"},
+            std::string{"[38-5m"},
+            std::string{"[38,7;5m"}
+    );
+
+    CAPTURE(str);
+    parser p{str.c_str(), str.size()};
+
+    CHECK(!p.good());
+
+}

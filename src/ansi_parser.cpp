@@ -12,6 +12,9 @@ hh::ansi::parser::parser(const char* s, std::size_t count)
             break;
         }
     }
+    if (currentState_ != state::done){
+        status_ = false;
+    }
 }
 
 void hh::ansi::parser::update_state(char ch)
@@ -20,43 +23,47 @@ void hh::ansi::parser::update_state(char ch)
     case state::start:
         if (ch=='[') {
             currentState_ = state::digit_terminator;
-            break;
+            return;
         }
+        break;
     case state::digit_terminator:
         if (std::isdigit(ch)) {
             code_.params[0] = ch - '0';
             currentState_ = state::digit_terminator_sep;
-            break;
+            return;
         }
         else if (is_terminator(ch)) {
             currentState_ = state::done;
-            break;
+            return;
         }
+        break;
     case state::digit_terminator_sep:
         if (std::isdigit(ch)) {
             auto& p =code_.params[code_.num_params];
             p *= 10;
             p += ch - '0';
-            break;
+            return;
         }
         else if (ch==';') {
             currentState_ = state::digit;
             ++code_.num_params;
-            break;
+            return;
         }
         else if (is_terminator(ch)) {
             currentState_ = state::done;
             ++code_.num_params;
-            break;
+            return;
         }
+        break;
     case state::digit:
         if (std::isdigit(ch)) {
             code_.params[code_.num_params] = ch - '0';
             currentState_ = state::digit_terminator_sep;
-            break;
+            return;
         }
+        break;
     default:
-        status_ = false;
         break;
     }
+    status_ = false;
 }
