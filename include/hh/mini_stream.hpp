@@ -1,5 +1,6 @@
 /// \file mini_stream.hpp
 /// \brief Lightweight implementation of c++ streams
+/// \todo add format specifiers
 
 #pragma once
 #include <hh/concepts.hpp>
@@ -101,8 +102,9 @@ private:
 template<serial_output Out>
 class mini_ostream : public mini_basic_ios {
 public:
-    explicit mini_ostream(Out&& out)
-            :output_{std::move(out)} { }
+    mini_ostream() = default;
+    explicit mini_ostream(Out& out)
+            :output_{out} { }
 
     // Not movable or copyable
     mini_ostream(const mini_ostream&) = delete;
@@ -170,11 +172,8 @@ public:
         output_.flush();
         return *this;
     }
-
-    [[nodiscard]] Out& native_stream() { return output_; }
-    [[nodiscard]] const Out& native_stream() const { return output_; }
 private:
-    Out output_;
+    Out& output_;
     static constexpr char ascii_digits[] = "0123456789abcdef";
 
     [[nodiscard]] std::size_t get_base()

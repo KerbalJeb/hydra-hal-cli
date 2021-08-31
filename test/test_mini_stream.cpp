@@ -12,8 +12,8 @@ using mini_ostream = hh::cli::mini_ostream<std::stringstream>;
 
 TEST_CASE("mini_ostream put char", "[ostream][put]")
 {
-    mini_ostream stream{std::stringstream{}};
-    auto& ss = stream.native_stream();
+    std::stringstream ss;
+    mini_ostream stream{ss};
 
     stream.put('a');
     auto str = ss.str();
@@ -22,8 +22,8 @@ TEST_CASE("mini_ostream put char", "[ostream][put]")
 
 TEST_CASE("mini_ostream write string", "[ostream][write]")
 {
-    mini_ostream stream{std::stringstream{}};
-    auto& ss = stream.native_stream();
+    std::stringstream ss;
+    mini_ostream stream{ss};
 
     auto str = GENERATE(
             std::string{"abcdefg"},
@@ -39,17 +39,18 @@ TEST_CASE("mini_ostream write string", "[ostream][write]")
 
 TEST_CASE("mini_ostream char stream inserter", "[ostream][stream_inserter]")
 {
-    mini_ostream stream{std::stringstream{}};
-    auto& ss = stream.native_stream();
+    std::stringstream ss;
+    mini_ostream stream{ss};
 
     stream << 'c';
 
-    CHECK(stream.native_stream().str()=="c");
+    CHECK(ss.str()=="c");
 }
 
 TEST_CASE("mini_ostream string stream inserter", "[ostream][stream_inserter]")
 {
-    mini_ostream stream{std::stringstream{}};
+    std::stringstream ss;
+    mini_ostream stream{ss};
 
     auto str = GENERATE(
             std::string{"abcdefg"},
@@ -61,24 +62,28 @@ TEST_CASE("mini_ostream string stream inserter", "[ostream][stream_inserter]")
 
     stream << str.c_str();
 
-    CHECK(stream.native_stream().str()==str);
+    CHECK(ss.str()==str);
 }
 
 TEMPLATE_TEST_CASE("mini_ostream int stream inserter", "[ostream][stream_inserter]", signed char, short, int)
 {
-    mini_ostream stream{std::stringstream{}};
+    std::stringstream ss;
+    mini_ostream stream{ss};
+
     auto i = GENERATE(0, 1, -1, -5, 127, -128);
     stream << i;
     CAPTURE(i);
-    CHECK(stream.native_stream().str()==std::to_string(i));
+    CHECK(ss.str()==std::to_string(i));
 }
 
 TEMPLATE_TEST_CASE("mini_ostream uint stream inserter", "[ostream][stream_inserter]", unsigned char, unsigned short,
         unsigned int)
 {
-    mini_ostream stream{std::stringstream{}};
+    std::stringstream ss;
+    mini_ostream stream{ss};
+
     auto i = GENERATE(0, 1, 127, 255);
     stream << i;
     CAPTURE(i);
-    CHECK(stream.native_stream().str()==std::to_string(i));
+    CHECK(ss.str()==std::to_string(i));
 }
