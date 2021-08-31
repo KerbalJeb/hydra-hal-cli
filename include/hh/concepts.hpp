@@ -7,13 +7,13 @@
 namespace hh::cli {
 
 template<typename T>
-concept serial_output = requires(T so, const char ch, std::size_t count)
+concept serial_output =  std::movable<T> && requires(T so, const char* s, std::size_t count, T&& rv)
 {
-    so.write(ch, count);
+    so.write(s, count);
     so.flush();
 };
 
-template<typename T> concept serial_input = requires(T si, char* s, std::size_t count)
+template<typename T> concept serial_input = std::movable<T> && requires(T si, char* s, std::size_t count)
 {
     { si.readsome(s, count) } -> std::convertible_to<std::size_t>;
     si.read(s, count);

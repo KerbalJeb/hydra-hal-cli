@@ -17,7 +17,9 @@ public:
     using fmtflags = std::uint32_t;
     using streamsize = std::size_t;
 
-    mini_ios_base(fmtflags flags)
+    mini_ios_base()
+            :flags_(dec | left) { }
+    explicit mini_ios_base(fmtflags flags)
             :flags_(flags) { }
 
     static constexpr fmtflags dec = 1 << 0;
@@ -32,7 +34,7 @@ public:
 
     /// \brief Gets the current format settings
     /// \return the current format setting
-    fmtflags flags() const;
+    [[nodiscard]] fmtflags flags() const { return flags_; }
     /// \brief replaces the current format settings
     /// \param flags new format settings
     /// \return the formatting flags before the call to the function
@@ -60,6 +62,7 @@ class mini_basic_ios : public mini_ios_base {
 public:
     using iostate = std::uint8_t;
 
+    mini_basic_ios() = default;
     static constexpr iostate goodbit = 0;
     static constexpr iostate badbit = 1 << 0;
     static constexpr iostate failbit = 1 << 1;
@@ -98,8 +101,8 @@ private:
 template<serial_output Out>
 class mini_ostream : public mini_basic_ios {
 public:
-    explicit mini_ostream(Out out)
-            :output_(out) { }
+    explicit mini_ostream(Out&& out)
+            :output_{std::move(out)} { }
 
     // Not movable or copyable
     mini_ostream(const mini_ostream&) = delete;
@@ -107,8 +110,23 @@ public:
     mini_ostream& operator=(const mini_ostream&) = delete;
     mini_ostream& operator=(mini_ostream&&) = delete;
 
-    mini_ostream& operator<<(const char* string) { write(string, std::strlen(string)); }
-    mini_ostream& operator<<(char ch) { put(ch); }
+    /// \brief String stream inserter operator
+    /// \param string a null terminated string
+    /// \return `*this`
+    mini_ostream& operator<<(const char* string)
+    {
+        write(string, std::strlen(string));
+        return *this;
+    }
+
+    /// \brief Char stream inserter operator
+    /// \param ch a charter
+    /// \return `*this`
+    mini_ostream& operator<<(char ch)
+    {
+        put(ch);
+        return *this;
+    }
 
     /// \brief Integer stream inserter operator
     /// \param value an integer value
@@ -120,6 +138,7 @@ public:
         char s[max_str_len];
         int start_idx = itoa(value, s, max_str_len);
         write(&s[start_idx], max_str_len-start_idx);
+        return *this;
     }
 
     /// \brief Writes a char to the output buffer
@@ -151,10 +170,12 @@ public:
         output_.flush();
         return *this;
     }
+
+    [[nodiscard]] Out& native_stream() { return output_; }
+    [[nodiscard]] const Out& native_stream() const { return output_; }
 private:
     Out output_;
     static constexpr char ascii_digits[] = "0123456789abcdef";
-    static constexpr char ascii_signs[] = "-+";
 
     [[nodiscard]] std::size_t get_base()
     {
@@ -194,8 +215,10 @@ private:
     int itoa(T value, char* s, streamsize count)
     {
         auto idx = itoa((std::make_unsigned_t<T>)std::abs(value), s, count);
-        --idx;
-        s[idx] = ascii_signs[value<0];
+        if (value<0) {
+            --idx;
+            s[idx] = '-';
+        }
         return idx;
     }
 
