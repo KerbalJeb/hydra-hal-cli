@@ -25,6 +25,7 @@ TEST_CASE("ansi parser", "[ansi]")
     CHECK(num_params==expected.num_params);
     CHECK(code.control_char==expected.control_char);
     CHECK(p.good());
+    CHECK(p.done_parsing());
     for (int i = 0; i<num_params; ++i) {
         CHECK(p.code().params[i]==expected.params[i]);
     }

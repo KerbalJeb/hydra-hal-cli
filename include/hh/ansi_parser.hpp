@@ -1,6 +1,6 @@
 /// \file ansi_parser.hpp
 /// \brief Created on 2021-08-30 by Ben
-
+// todo document class
 #pragma once
 #include <cstdint>
 #include <cctype>
@@ -20,8 +20,11 @@ public:
     };
 
     parser(const char* s, std::size_t count);
+
     [[nodiscard]] const ansi_code& code() const { return code_; }
     [[nodiscard]] bool good() const { return status_; }
+    [[nodiscard]] bool done_parsing() const { return currentState_==state::done; }
+    bool parse(char ch);
 
 private:
     enum class state {
@@ -34,9 +37,7 @@ private:
 
     void update_state(char ch);
 
-    static bool is_terminator(char ch){
-        return std::isalpha(ch);
-    }
+    static bool is_terminator(char ch);
 
     bool status_{true};
     state currentState_{state::start};

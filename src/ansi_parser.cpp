@@ -6,13 +6,9 @@
 hh::ansi::parser::parser(const char* s, std::size_t count)
 {
     for (std::size_t i = 0; i<count; ++i, ++s) {
-        update_state(*s);
-        if (currentState_==state::done) {
-            code_.control_char = *s;
-            break;
-        }
+        if (parse(*s)) { break; }
     }
-    if (currentState_ != state::done){
+    if (!done_parsing()){
         status_ = false;
     }
 }
@@ -33,6 +29,7 @@ void hh::ansi::parser::update_state(char ch)
             return;
         }
         else if (is_terminator(ch)) {
+            code_.control_char = ch;
             currentState_ = state::done;
             return;
         }
@@ -45,13 +42,14 @@ void hh::ansi::parser::update_state(char ch)
             return;
         }
         else if (ch==';') {
-            currentState_ = state::digit;
             ++code_.num_params;
+            currentState_ = state::digit;
             return;
         }
         else if (is_terminator(ch)) {
-            currentState_ = state::done;
             ++code_.num_params;
+            code_.control_char = ch;
+            currentState_ = state::done;
             return;
         }
         break;
@@ -66,4 +64,15 @@ void hh::ansi::parser::update_state(char ch)
         break;
     }
     status_ = false;
+}
+
+bool hh::ansi::parser::parse(char ch)
+{
+    update_state(ch);
+    return done_parsing();
+}
+
+bool hh::ansi::parser::is_terminator(char ch)
+{
+    return std::isalpha(ch);
 }
