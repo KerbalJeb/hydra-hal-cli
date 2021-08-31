@@ -1,11 +1,14 @@
-/// \file ansi_escape_codes.hpp
+/// \file ansi_parser.hpp
 /// \brief Created on 2021-08-30 by Ben
 
 #pragma once
+#include <hh/fixed_sv_set.hpp>
 #include <cstdint>
+#include <cctype>
+
+#include <unordered_set>
 
 namespace hh::ansi {
-constexpr char escape[] = "\x1b[";
 
 class parser {
 public:
@@ -18,19 +21,26 @@ public:
     };
 
     parser(const char* s, std::size_t count);
-    [[nodiscard]] const ansi_code& code() const;
+    [[nodiscard]] const ansi_code& code() const { return code_; }
+    [[nodiscard]] bool good() const { return status_; }
 
 private:
     enum class state {
       start,
-      parse,
+      digit_terminator,
+      digit_terminator_sep,
       digit,
       done,
-      error
     };
 
+    void update_state(char ch);
+
+    static bool is_terminator(char ch){
+        return std::isalpha(ch);
+    }
+
     bool status_{true};
-    state state_{state::start};
+    state currentState_{state::start};
     ansi_code code_{};
 };
 }
