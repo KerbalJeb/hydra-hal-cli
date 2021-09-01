@@ -14,7 +14,12 @@ target_link_libraries(test_mini_stream Catch2::Catch2WithMain hh::cli)
 add_executable(test_ansi_parser test_ansi_parser.cpp)
 target_link_libraries(test_ansi_parser Catch2::Catch2WithMain hh::cli)
 
+add_executable(test_shell test_shell.cpp)
+target_link_libraries(test_shell Catch2::Catch2WithMain hh::cli)
+
 include(CTest)
 include(Catch)
+
 catch_discover_tests(test_mini_stream)
 catch_discover_tests(test_ansi_parser)
+catch_discover_tests(test_shell)
