@@ -25,6 +25,7 @@ public:
     [[nodiscard]] bool good() const { return status_; }
     [[nodiscard]] bool done_parsing() const { return currentState_==state::done; }
     bool parse(char ch);
+    void reset();
 
 private:
     enum class state {
