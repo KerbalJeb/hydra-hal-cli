@@ -11,7 +11,7 @@ addons:
       - g++-10
       - cmake
       - clang-tidy
-      - gcov
+      - lcov
 
 script:
   - /usr/bin/gcc-10 -v && /usr/bin/g++ -v && cmake --version
