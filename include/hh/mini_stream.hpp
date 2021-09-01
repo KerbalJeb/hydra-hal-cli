@@ -99,22 +99,22 @@ private:
     iostate state_{};
 };
 
-template<serial_output Out>
-class mini_ostream : public mini_basic_ios {
+template<serial_out_device Out>
+class oserial_stream : public mini_basic_ios {
 public:
-    explicit mini_ostream(Out& out)
+    explicit oserial_stream(Out& out)
             :output_{out} { }
 
     // Not movable or copyable
-    mini_ostream(const mini_ostream&) = delete;
-    mini_ostream(mini_ostream&&) = delete;
-    mini_ostream& operator=(const mini_ostream&) = delete;
-    mini_ostream& operator=(mini_ostream&&) = delete;
+    oserial_stream(const oserial_stream&) = delete;
+    oserial_stream(oserial_stream&&) = delete;
+    oserial_stream& operator=(const oserial_stream&) = delete;
+    oserial_stream& operator=(oserial_stream&&) = delete;
 
     /// \brief String stream inserter operator
     /// \param string a null terminated string
     /// \return `*this`
-    mini_ostream& operator<<(const char* string)
+    oserial_stream& operator<<(const char* string)
     {
         write(string, std::strlen(string));
         return *this;
@@ -123,7 +123,7 @@ public:
     /// \brief Char stream inserter operator
     /// \param ch a charter
     /// \return `*this`
-    mini_ostream& operator<<(char ch)
+    oserial_stream& operator<<(char ch)
     {
         put(ch);
         return *this;
@@ -133,7 +133,7 @@ public:
     /// \param value an integer value
     /// \return `*this`
     template<std::integral T>
-    mini_ostream& operator<<(T value)
+    oserial_stream& operator<<(T value)
     {
         constexpr auto max_str_len = std::numeric_limits<T>::digits+1;
         char s[max_str_len];
@@ -145,7 +145,7 @@ public:
     /// \brief Writes a char to the output buffer
     /// \param ch The char
     /// \return `*this`
-    mini_ostream& put(char ch)
+    oserial_stream& put(char ch)
     {
         output_.write(&ch, 1);
         return *this;
@@ -155,7 +155,7 @@ public:
     /// \param s The char buffer
     /// \param count The size of the char buffer
     /// \return `*this`
-    mini_ostream& write(const char* s, streamsize count)
+    oserial_stream& write(const char* s, streamsize count)
     {
         output_.write(s, count);
         return *this;
@@ -166,7 +166,7 @@ public:
     /// Forces all data to be written to the SerialOutput device, blocks current thread until write is completed.
     /// \post `empty()` returns true
     /// \return `*this`
-    mini_ostream& flush()
+    oserial_stream& flush()
     {
         output_.flush();
         return *this;
@@ -221,54 +221,4 @@ private:
     }
 
 };
-
-template<serial_input In>
-class mini_istream : public mini_basic_ios {
-public:
-    mini_istream(In in)
-            :input_{in} { }
-
-    // Not movable or copyable
-    mini_istream(const mini_istream&) = delete;
-    mini_istream(mini_istream&&) = delete;
-    mini_istream& operator=(const mini_istream&) = delete;
-    mini_istream& operator=(mini_istream&&) = delete;
-
-    template<std::integral T>
-    mini_istream& operator>>(T& value){
-        return *this;
-    }
-
-    mini_istream& get(char& ch){
-        return *this;
-    }
-
-    int get(){
-        return 0;
-    }
-
-    mini_istream& unget(){
-        return *this;
-    }
-
-    [[nodiscard]] int peek() const{
-        return 0;
-    }
-
-    mini_istream& putback(char c){
-        return *this;
-    }
-
-    mini_istream& get_line(char* s, streamsize count, char delim = '\n'){
-        return *this;
-    }
-
-    std::size_t readsome(char* s, streamsize count){
-        return 0;
-    }
-
-private:
-    In input_;
-};
-
 }
