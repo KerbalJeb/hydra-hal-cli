@@ -2,7 +2,7 @@ set(CTEST_COVERAGE_COMMAND "gcov")
 set(CTEST_MEMORYCHECK_TYPE "AddressSanitizer;UndefinedBehaviorSanitizer")
 
 set(CTEST_SOURCE_DIRECTORY "./")
-set(CTEST_BINARY_DIRECTORY cmake-build-debug-wsl/test)
+set(CTEST_BINARY_DIRECTORY build/test)
 set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
 
 ctest_start(Continuous)
