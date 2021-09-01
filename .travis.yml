@@ -10,9 +10,11 @@ addons:
       - gcc-10
       - g++-10
       - cmake
+      - clang-tidy
+      - gcov
 
 script:
   - /usr/bin/gcc-10 -v && /usr/bin/g++ -v && cmake --version
   - cmake -S . -B build -DCMAKE_CXX_COMPILER=/usr/bin/g++-10 -DCMAKE_C_COMPILER=/usr/bin/gcc-10
   - cmake --build build
-  - cd build/test && ctest
+  - ctest -S cmake/run_tests.cmake
