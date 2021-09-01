@@ -76,3 +76,9 @@ bool hh::ansi::parser::is_terminator(char ch)
 {
     return std::isalpha(ch);
 }
+void hh::ansi::parser::reset()
+{
+    status_ = true;
+    currentState_ = state::start;
+    code_ = {};
+}
