@@ -102,7 +102,6 @@ private:
 template<serial_output Out>
 class mini_ostream : public mini_basic_ios {
 public:
-    mini_ostream() = default;
     explicit mini_ostream(Out& out)
             :output_{out} { }
 
