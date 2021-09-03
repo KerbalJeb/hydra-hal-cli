@@ -1,8 +1,9 @@
 cmake_minimum_required (VERSION 3.16)
 project ("Arm Cortex-M Base" C CXX ASM)
 option(CLONE_TO_LOCAL OFF)
-
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+
+include(Sanitizers.cmake)
 
 add_library(hal_cli
             src/mini_stream.cpp
