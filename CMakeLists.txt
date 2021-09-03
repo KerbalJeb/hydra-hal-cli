@@ -11,6 +11,7 @@ add_library(hal_cli
             src/ansi_parser.cpp)
 target_include_directories(hal_cli PUBLIC include)
 target_compile_features(hal_cli PUBLIC cxx_std_20)
+target_compile_options(hal_cli PUBLIC -Wall -Wextra -pedantic)
 
 add_library(hh::cli ALIAS hal_cli)
 
