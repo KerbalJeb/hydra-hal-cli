@@ -9,6 +9,7 @@ namespace hh::shell {
 template<std::size_t NumLines, std::size_t LineLen>
 class cmd_history;
 
+// todo add pointer to member parameter for inc and dec functions
 template<class T, class Container>
 class circular_iter {
 public:
@@ -18,7 +19,7 @@ public:
     using reference = T&;
     using pointer = T*;
 
-    circular_iter(value_type item, Container* container)
+    circular_iter(T item, Container* container)
             :pos_(item), container_(container) { }
 
     template<class OtherT, class OtherContainer>
@@ -33,22 +34,25 @@ public:
     /// \return
     circular_iter& operator++()
     {
-        pos_ += inc_amount;
+        container_->increment(pos_);
         if (pos_==container_->tail_) { pos_ = nullptr; }
         return *this;
     }
+
     circular_iter operator++(int)
     {
         auto old = *this;
         ++(*this);
         return old;
     }
+
     circular_iter& operator--()
     {
         if (pos_==nullptr) { pos_ = container_->tail_; }
-        else { pos_ -= inc_amount; }
+        else { container_->decrement(pos_); }
         return *this;
     }
+
     circular_iter operator--(int)
     {
         auto old = *this;
@@ -58,10 +62,8 @@ public:
 
     bool operator==(const circular_iter& other) const { return pos_==other.pos_; }
 private:
-    static constexpr difference_type inc_amount = Container::line_len;
     Container* container_;
-    value_type pos_;
-    bool end = false;
+    T pos_;
 };
 
 template<std::size_t NumLines, std::size_t LineLen>
@@ -72,57 +74,69 @@ public:
     using value_type = char*;
     using reference = char*;
     using const_reference = const char*;
-    using iterator = circular_iter<value_type, cmd_history>;
-    using const_iterator = circular_iter<const value_type, cmd_history>;
+    using iterator = circular_iter<char*, cmd_history>;
+    using const_iterator = circular_iter<const char*, const cmd_history>;
     using difference_type = std::ptrdiff_t;
     using size_type = std::size_t;
 
     cmd_history() = default;
+
+    const_iterator begin() const { return const_iterator{tail_, this}; }
+    const_iterator end() const { return const_iterator{nullptr, this}; }
 
     reference back() { return head_; }
     [[nodiscard]] const_reference front() const { return tail_; }
     [[nodiscard]] const_reference back() const { return head_; }
 
     [[nodiscard]] size_type size() const { return num_cmds_; }
-    [[nodiscard]] size_type max_size() const { return NumLines; }
+    [[nodiscard]] size_type max_size() const { return buffer_size_; }
     [[nodiscard]] bool empty() const { return num_cmds_==1 && count_==0; }
 
-    void end_string();
-    void push_back(char ch);
-    void push_back(const char* s);
+    void end_string()
+    {
+        head_ += LineLen;
+        if (head_==buffer_end_) { head_ = buffer_; }
+        if (head_==tail_) { tail_ += LineLen; }
+        else { ++num_cmds_; }
+        count_ = 0;
+    }
+
+    void push_back(char ch)
+    {
+        if (count_<LineLen) {
+            head_[count_++] = ch;
+        }
+    }
+
+    void push_back(const char* s)
+    {
+        while (*s!='\0') {
+            push_back(*s++);
+        }
+    }
 
 private:
     friend iterator;
     friend const_iterator;
-    static constexpr std::ptrdiff_t line_len = LineLen;
-    char buffer_[NumLines*LineLen]{};
+    static constexpr std::ptrdiff_t line_len_ = LineLen;
+    static constexpr std::ptrdiff_t buffer_size_ = NumLines*LineLen;
+    char buffer_[buffer_size_]{};
     char* const buffer_end_{&buffer_[NumLines*LineLen]};
     char* head_{buffer_};
     char* tail_{buffer_};
     size_type count_{0};
     size_type num_cmds_{1};
+
+    void increment(const char*& p) const
+    {
+        p += line_len_;
+        if (p>=buffer_end_) { p -= buffer_size_; }
+    }
+
+    void decrement(const char*& p) const
+    {
+        p -= line_len_;
+        if (p<buffer_) { p += buffer_size_; }
+    }
 };
-
-// Defs
-template<std::size_t NumLines, std::size_t LineLen>
-void cmd_history<NumLines, LineLen>::end_string()
-{
-    head_ += LineLen;
-    if (head_==buffer_end_) { head_ = buffer_; }
-    if (head_==tail_) { tail_ += LineLen; }
-    else { ++num_cmds_; }
-    count_ = 0;
-}
-
-template<std::size_t NumLines, std::size_t LineLen>
-void cmd_history<NumLines, LineLen>::push_back(char ch)
-{
-    if (count_<LineLen) { head_[count_++] = ch; }
-}
-
-template<std::size_t NumLines, std::size_t LineLen>
-void cmd_history<NumLines, LineLen>::push_back(const char* s)
-{
-    while (*s!='\0') { push_back(*s++); }
-}
 }

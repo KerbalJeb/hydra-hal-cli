@@ -64,3 +64,23 @@ TEST_CASE("cmd overwrite"){
     CHECK(history.front() == "cmd2"s);
     CHECK(history.back() == "cmd3"s);
 }
+
+TEST_CASE("cmd iterator"){
+    hh::shell::cmd_history<3, 5> history{};
+    history.push_back("cmd1");
+    history.end_string();
+    history.push_back("cmd2");
+    history.end_string();
+    history.push_back("cmd3");
+
+    REQUIRE(history.size() == 3);
+
+    auto it = history.begin();
+    REQUIRE(*it == "cmd1"s);
+    ++it;
+    REQUIRE(*it == "cmd2"s);
+    ++it;
+    REQUIRE(*it == "cmd3"s);
+    ++it;
+    REQUIRE(it == history.end());
+}
