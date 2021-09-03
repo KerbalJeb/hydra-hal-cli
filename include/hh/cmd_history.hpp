@@ -126,7 +126,7 @@ public:
         return p;
     }
 
-    void end_string()
+    void push_cmd_back()
     {
         head_ += LineLen;
         if (head_==buffer_end_) { head_ = buffer_; }

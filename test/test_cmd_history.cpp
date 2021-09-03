@@ -38,11 +38,11 @@ TEST_CASE("push_back on full line does nothing")
     CHECK(front=="ab"s);
 }
 
-TEST_CASE("end_string after non empty line results starts new command")
+TEST_CASE("push_cmd_back after non empty line results starts new command")
 {
     hh::shell::cmd_history<2, 10> history{};
     history.push_back("cmd1");
-    history.end_string();
+    history.push_cmd_back();
     history.push_back("cmd2");
 
     CHECK(history.size()==2);
@@ -51,13 +51,13 @@ TEST_CASE("end_string after non empty line results starts new command")
     CHECK(history.back()=="cmd2"s);
 }
 
-TEST_CASE("end_string on full buffer overrides oldest command")
+TEST_CASE("push_cmd_back on full buffer overrides oldest command")
 {
     hh::shell::cmd_history<2, 5> history{};
     history.push_back("cmd1");
-    history.end_string();
+    history.push_cmd_back();
     history.push_back("cmd2");
-    history.end_string();
+    history.push_cmd_back();
     history.push_back("cmd3");
 
     CHECK(history.size()==2);
@@ -70,9 +70,9 @@ TEST_CASE("incrementing begin on non empty buffer iterates over all stored strin
 {
     hh::shell::cmd_history<3, 5> history{};
     history.push_back("cmd1");
-    history.end_string();
+    history.push_cmd_back();
     history.push_back("cmd2");
-    history.end_string();
+    history.push_cmd_back();
     history.push_back("cmd3");
 
     REQUIRE(history.size()==3);
