@@ -74,22 +74,21 @@ TEST_CASE("shell backspace", "[shell]")
     CHECK(shell.current_line()==std::string{"hello world"});
 }
 
-
 TEST_CASE("shell backspace overflow", "[shell]")
 {
     mock_serial serial;
     shell_test_t shell{serial};
-    std::string str{"hi!\b\b\b\b"};
+    std::string str{"hi!\b\b\b\bhi!"};
 
     serial.istream << str;
     shell.notify();
 
     CHECK(serial.ostream.str()=="hi!"
+                                "\x1b[s\x1b[2K>hi\x1b[u\x1b[1D"
                                 "\x1b[s\x1b[2K>h\x1b[u\x1b[1D"
                                 "\x1b[s\x1b[2K>\x1b[u\x1b[1D"
-                                "\x1b[s\x1b[2K>\x1b[u\x1b[1D"
-                                "\x1b[s\x1b[2K>\x1b[u\x1b[1D");
-    CHECK(shell.current_line()==std::string{""});
+                                "hi!");
+    CHECK(shell.current_line()==std::string{"hi!"});
 }
 
 TEST_CASE("shell move cursor and backspace", "[shell]")

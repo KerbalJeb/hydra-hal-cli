@@ -6,6 +6,7 @@
 #include <hh/mini_stream.hpp>
 #include <hh/ansi_parser.hpp>
 #include <hh/ansi_codes.hpp>
+#include <hh/cmd_history.hpp>
 #include <cctype>
 #include <string>
 
@@ -81,9 +82,11 @@ private:
             storage_[0] = '\0';
             break;
         case '\b':
-            *(--storage_end_) = '\0';
-            lout << ansi::save_cursor << ansi::clear_line << prompt_char_ << storage_;
-            lout << ansi::restore_cursor << ansi::move_left<1>;
+            if (storage_end_>storage_) {
+                *(--storage_end_) = '\0';
+                lout << ansi::save_cursor << ansi::clear_line << prompt_char_ << storage_;
+                lout << ansi::restore_cursor << ansi::move_left<1>;
+            }
             break;
         default:
             lout << ch;
