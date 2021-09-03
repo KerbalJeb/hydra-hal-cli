@@ -78,7 +78,6 @@ class cmd_history {
 public:
     // todo pack strings in buffer
     // todo copy/move constructors
-    // todo mutable string view
     using value_type = char*;
     using reference = char*;
     using const_reference = std::string_view;
@@ -92,7 +91,6 @@ public:
     const_iterator begin() const { return const_iterator{tail_, this}; }
     const_iterator end() const { return const_iterator{nullptr, this}; }
 
-//    reference back() { return head_; }
     [[nodiscard]] const_reference front() const { return tail_; }
     [[nodiscard]] const_reference back() const { return head_; }
 
@@ -113,7 +111,20 @@ public:
         return p;
     }
 
-    char* erase(const char* pos);
+    char* erase(const char* pos)
+    {
+        char* p = const_cast<char*>(pos);
+        if (count_>0) {
+            if (p!=&buffer_[count_]) {
+                std::copy(p+1, &buffer_[count_], p);
+
+            }
+            --count_;
+            buffer_[count_] = '\0';
+        }
+        if (p>&buffer_[count_]) { p = &buffer_[count_]; }
+        return p;
+    }
 
     void end_string()
     {

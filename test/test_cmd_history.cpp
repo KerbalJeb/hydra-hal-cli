@@ -121,9 +121,58 @@ TEST_CASE("insert char at end of string shifts string right and inserts char cor
     hh::shell::cmd_history<3, 20> history{};
     history.push_back("42 is the answe");
     auto cursor = history.back().end();
-    cursor=history.insert(cursor, 'r');
+    cursor = history.insert(cursor, 'r');
     auto str = history.back();
     auto expected = "42 is the answer"s;
-    CHECK(str == expected);
-    CHECK(*cursor == 'r');
+    CHECK(str==expected);
+    CHECK(*cursor=='r');
+}
+
+TEST_CASE("erase on beginning of string deletes first char")
+{
+    hh::shell::cmd_history<3, 20> history{};
+    history.push_back("42 is the answer");
+    auto cursor = history.back().begin();
+    cursor = history.erase(cursor);
+    auto str = history.back();
+    auto expected = "2 is the answer"s;
+    CHECK(str==expected);
+    CHECK(*cursor=='2');
+}
+
+TEST_CASE("erase on middle of string deletes middle char")
+{
+    hh::shell::cmd_history<3, 20> history{};
+    history.push_back("42 is the answer");
+    auto cursor = history.back().begin();
+    ++cursor;
+    ++cursor;
+    cursor = history.erase(cursor);
+    auto str = history.back();
+    auto expected = "42is the answer"s;
+    CHECK(str==expected);
+    CHECK(*cursor=='i');
+}
+
+TEST_CASE("erase on end of string deletes last char")
+{
+    hh::shell::cmd_history<3, 20> history{};
+    history.push_back("42 is the answer");
+    auto cursor = history.back().end();
+    cursor = history.erase(cursor);
+    auto str = history.back();
+    auto expected = "42 is the answe"s;
+    CHECK(str==expected);
+    CHECK(cursor==str.end());
+}
+
+TEST_CASE("erase on empty string does nothing")
+{
+    hh::shell::cmd_history<3, 20> history{};
+    auto cursor = history.back().end();
+    cursor = history.erase(cursor);
+    auto str = history.back();
+    auto expected = ""s;
+    CHECK(str==expected);
+    CHECK(cursor==str.begin());
 }
