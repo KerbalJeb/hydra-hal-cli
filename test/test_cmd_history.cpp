@@ -7,7 +7,7 @@
 
 using namespace std::string_literals;
 
-TEST_CASE("cmd push_back")
+TEST_CASE("push_back on not full buffer adds char")
 {
     hh::shell::cmd_history<1, 10> history{};
 
@@ -23,7 +23,7 @@ TEST_CASE("cmd push_back")
     CHECK(front=="ab"s);
 }
 
-TEST_CASE("cmd push_back on full buffer")
+TEST_CASE("push_back on full line does nothing")
 {
     hh::shell::cmd_history<1, 2> history{};
 
@@ -38,7 +38,7 @@ TEST_CASE("cmd push_back on full buffer")
     CHECK(front=="ab"s);
 }
 
-TEST_CASE("multiple cmds")
+TEST_CASE("end_string after non empty line results starts new command")
 {
     hh::shell::cmd_history<2, 10> history{};
     history.push_back("cmd1");
@@ -51,7 +51,7 @@ TEST_CASE("multiple cmds")
     CHECK(history.back()=="cmd2"s);
 }
 
-TEST_CASE("cmd overwrite")
+TEST_CASE("end_string on full buffer overrides oldest command")
 {
     hh::shell::cmd_history<2, 5> history{};
     history.push_back("cmd1");
@@ -66,7 +66,7 @@ TEST_CASE("cmd overwrite")
     CHECK(history.back()=="cmd3"s);
 }
 
-TEST_CASE("cmd iterator")
+TEST_CASE("incrementing begin on non empty buffer iterates over all stored strings")
 {
     hh::shell::cmd_history<3, 5> history{};
     history.push_back("cmd1");
@@ -88,4 +88,42 @@ TEST_CASE("cmd iterator")
     REQUIRE(it->size()==4);
     ++it;
     REQUIRE(it==history.end());
+}
+
+TEST_CASE("insert char at start of string shifts string right and inserts char at beginning")
+{
+    hh::shell::cmd_history<3, 20> history{};
+    history.push_back("2 is the answer");
+    auto cursor = history.back().begin();
+    cursor=history.insert(cursor, '4');
+    auto str = history.back();
+    auto expected = "42 is the answer"s;
+    CHECK(str == expected);
+    CHECK(cursor == str.begin());
+}
+
+TEST_CASE("insert char in middle of string shifts string right and inserts char correct pos")
+{
+    hh::shell::cmd_history<3, 20> history{};
+    history.push_back("42is the answer");
+    auto cursor = history.back().begin();
+    ++cursor;
+    ++cursor;
+    cursor=history.insert(cursor, ' ');
+    auto str = history.back();
+    auto expected = "42 is the answer"s;
+    CHECK(str == expected);
+    CHECK(*cursor == ' ');
+}
+
+TEST_CASE("insert char at end of string shifts string right and inserts char correct pos")
+{
+    hh::shell::cmd_history<3, 20> history{};
+    history.push_back("42 is the answe");
+    auto cursor = history.back().end();
+    cursor=history.insert(cursor, 'r');
+    auto str = history.back();
+    auto expected = "42 is the answer"s;
+    CHECK(str == expected);
+    CHECK(*cursor == 'r');
 }

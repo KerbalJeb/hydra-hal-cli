@@ -92,13 +92,28 @@ public:
     const_iterator begin() const { return const_iterator{tail_, this}; }
     const_iterator end() const { return const_iterator{nullptr, this}; }
 
-    reference back() { return head_; }
+//    reference back() { return head_; }
     [[nodiscard]] const_reference front() const { return tail_; }
     [[nodiscard]] const_reference back() const { return head_; }
 
     [[nodiscard]] size_type size() const { return num_cmds_; }
     [[nodiscard]] size_type max_size() const { return buffer_size_; }
     [[nodiscard]] bool empty() const { return num_cmds_==1 && count_==0; }
+
+    char* insert(const char* pos, char ch)
+    {
+        char* p = const_cast<char*>(pos);
+        // check for room
+        if (count_<line_len_) {
+            // shift right by one
+            ++count_;
+            std::copy_backward(p, &buffer_[count_], &buffer_[count_+1]);
+            *p = ch;
+        }
+        return p;
+    }
+
+    char* erase(const char* pos);
 
     void end_string()
     {
