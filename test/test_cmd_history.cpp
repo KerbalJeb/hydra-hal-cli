@@ -14,7 +14,6 @@ TEST_CASE("cmd push_back")
     history.push_back('a');
     history.push_back('b');
 
-
     CHECK(history.size()==1);
 
     auto back = history.back();
@@ -39,19 +38,21 @@ TEST_CASE("cmd push_back on full buffer")
     CHECK(front=="ab"s);
 }
 
-TEST_CASE("multiple cmds"){
+TEST_CASE("multiple cmds")
+{
     hh::shell::cmd_history<2, 10> history{};
     history.push_back("cmd1");
     history.end_string();
     history.push_back("cmd2");
 
-    CHECK(history.size() == 2);
+    CHECK(history.size()==2);
 
-    CHECK(history.front() == "cmd1"s);
-    CHECK(history.back() == "cmd2"s);
+    CHECK(history.front()=="cmd1"s);
+    CHECK(history.back()=="cmd2"s);
 }
 
-TEST_CASE("cmd overwrite"){
+TEST_CASE("cmd overwrite")
+{
     hh::shell::cmd_history<2, 5> history{};
     history.push_back("cmd1");
     history.end_string();
@@ -59,13 +60,14 @@ TEST_CASE("cmd overwrite"){
     history.end_string();
     history.push_back("cmd3");
 
-    CHECK(history.size() == 2);
+    CHECK(history.size()==2);
 
-    CHECK(history.front() == "cmd2"s);
-    CHECK(history.back() == "cmd3"s);
+    CHECK(history.front()=="cmd2"s);
+    CHECK(history.back()=="cmd3"s);
 }
 
-TEST_CASE("cmd iterator"){
+TEST_CASE("cmd iterator")
+{
     hh::shell::cmd_history<3, 5> history{};
     history.push_back("cmd1");
     history.end_string();
@@ -73,17 +75,17 @@ TEST_CASE("cmd iterator"){
     history.end_string();
     history.push_back("cmd3");
 
-    REQUIRE(history.size() == 3);
+    REQUIRE(history.size()==3);
 
     auto it = history.begin();
-    REQUIRE(*it == "cmd1"s);
-    REQUIRE(it->size() == 4);
+    REQUIRE(*it=="cmd1"s);
+    REQUIRE(it->size()==4);
     ++it;
-    REQUIRE(*it == "cmd2"s);
-    REQUIRE(it->size() == 4);
+    REQUIRE(*it=="cmd2"s);
+    REQUIRE(it->size()==4);
     ++it;
-    REQUIRE(*it == "cmd3"s);
-    REQUIRE(it->size() == 4);
+    REQUIRE(*it=="cmd3"s);
+    REQUIRE(it->size()==4);
     ++it;
-    REQUIRE(it == history.end());
+    REQUIRE(it==history.end());
 }

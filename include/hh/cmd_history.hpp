@@ -1,5 +1,6 @@
 /// \file cmd_history.hpp
 /// \brief Created on 2021-09-01 by Ben
+/// \todo Add documentation
 
 #pragma once
 #include <cstring>
@@ -68,8 +69,8 @@ public:
 
     bool operator==(const circular_iter& other) const { return pos_==other.pos_; }
 private:
-    Container* container_;
     T pos_;
+    Container* container_;
 };
 
 template<std::size_t NumLines, std::size_t LineLen>
@@ -77,9 +78,10 @@ class cmd_history {
 public:
     // todo pack strings in buffer
     // todo copy/move constructors
+    // todo mutable string view
     using value_type = char*;
     using reference = char*;
-    using const_reference = const char*;
+    using const_reference = std::string_view;
     using const_iterator = circular_iter<const char*, const cmd_history>;
     using iterator = const_iterator;
     using difference_type = std::ptrdiff_t;
