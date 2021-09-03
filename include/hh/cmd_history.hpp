@@ -13,11 +13,17 @@ class cmd_history;
 template<class T, class Container>
 class circular_iter {
 public:
+    struct string_view_ptr: public std::string_view {
+      string_view_ptr* operator->(){
+          return this;
+      }
+    };
+
     using iterator_category = std::bidirectional_iterator_tag;
     using value_type = typename std::remove_const<T>;
     using difference_type = std::ptrdiff_t;
-    using reference = T&;
-    using pointer = T*;
+    using reference = std::string_view;
+    using pointer = string_view_ptr;
 
     circular_iter(T item, Container* container)
             :pos_(item), container_(container) { }
@@ -28,7 +34,7 @@ public:
             : pos_(other.pos_), container_(other.container_) { }
 
     reference operator*() { return pos_; }
-    pointer operator->() { return &pos_; }
+    pointer operator->() { return pointer {pos_}; }
 
     /// \brief Increments to next string in buffer
     /// \return
@@ -69,13 +75,13 @@ private:
 template<std::size_t NumLines, std::size_t LineLen>
 class cmd_history {
 public:
-    // todo convert char* to std string view
     // todo pack strings in buffer
+    // todo copy/move constructors
     using value_type = char*;
     using reference = char*;
     using const_reference = const char*;
-    using iterator = circular_iter<char*, cmd_history>;
     using const_iterator = circular_iter<const char*, const cmd_history>;
+    using iterator = const_iterator;
     using difference_type = std::ptrdiff_t;
     using size_type = std::size_t;
 
@@ -116,7 +122,6 @@ public:
     }
 
 private:
-    friend iterator;
     friend const_iterator;
     static constexpr std::ptrdiff_t line_len_ = LineLen;
     static constexpr std::ptrdiff_t buffer_size_ = NumLines*LineLen;

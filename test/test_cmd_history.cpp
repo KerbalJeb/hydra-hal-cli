@@ -77,10 +77,13 @@ TEST_CASE("cmd iterator"){
 
     auto it = history.begin();
     REQUIRE(*it == "cmd1"s);
+    REQUIRE(it->size() == 4);
     ++it;
     REQUIRE(*it == "cmd2"s);
+    REQUIRE(it->size() == 4);
     ++it;
     REQUIRE(*it == "cmd3"s);
+    REQUIRE(it->size() == 4);
     ++it;
     REQUIRE(it == history.end());
 }
