@@ -17,55 +17,65 @@ namespace hh::container {
         using iterator = char *;
         using const_iterator = const char *;
 
-        constexpr fixed_string();
-        constexpr fixed_string(const fixed_string&);
-        constexpr fixed_string& operator=(const fixed_string&);
-        constexpr fixed_string(fixed_string&&);
-        constexpr fixed_string& operator=(fixed_string&&);
-
+        constexpr fixed_string() = default;
+        constexpr fixed_string(const char *s) { append(s); }
+        constexpr fixed_string(const fixed_string &);
+        constexpr fixed_string &operator=(const fixed_string &);
+        constexpr fixed_string(fixed_string &&);
+        constexpr fixed_string &operator=(fixed_string &&);
         constexpr reference operator[](size_type pos);
         constexpr const_reference operator[](size_type pos) const;
 
-        constexpr reference front();
-        constexpr const_reference front() const;
-        constexpr reference back();
-        constexpr const_reference back() const;
-        constexpr const value_type* c_str() const;
+        [[nodiscard]] constexpr reference front() { return *(cursor_ - 1); }
+        [[nodiscard]] constexpr const_reference front() const { return *(cursor_ - 1); }
+        [[nodiscard]] constexpr reference back() { return *buffer_; }
+        [[nodiscard]] constexpr const_reference back() const { return *buffer_; }
+        [[nodiscard]] constexpr const value_type *c_str() const { return buffer_; }
 
-        constexpr iterator begin();
-        constexpr const_iterator begin() const;
-        constexpr const_iterator cbegin() const;
-        constexpr iterator end();
-        constexpr const_iterator end() const;
-        constexpr const_iterator cend() const;
+        [[nodiscard]] constexpr iterator begin() { return buffer_; }
+        [[nodiscard]] constexpr const_iterator begin() const { return buffer_; }
+        [[nodiscard]] constexpr const_iterator cbegin() const { return buffer_; }
+        [[nodiscard]] constexpr iterator end() { return cursor_; }
+        [[nodiscard]] constexpr const_iterator end() const { return cursor_; }
+        [[nodiscard]] constexpr const_iterator cend() const { return cursor_; }
 
-        constexpr bool empty() const;
-        constexpr size_type size() const;
-        constexpr size_type length() const;
-        constexpr size_type max_size() const;
+        [[nodiscard]] constexpr bool empty() const { return buffer_ == cursor_; }
+        [[nodiscard]] constexpr size_type size() const { return cursor_ - buffer_; }
+        [[nodiscard]] constexpr size_type length() const { return size(); }
+        [[nodiscard]] constexpr size_type max_size() const { return N; }
 
-        constexpr void clear();
+        constexpr void clear() {
+            cursor_ = buffer_;
+            *cursor_ = 0;
+        }
         constexpr iterator insert(const_iterator pos, value_type ch);
-        constexpr fixed_string& insert(const_iterator pos, const value_type* s);
+        constexpr fixed_string &insert(const_iterator pos, const value_type *s);
         constexpr iterator erase(const_iterator pos);
-        constexpr void push_back(value_type ch);
+        constexpr void push_back(value_type ch) {
+            if (cursor_ == bufferEnd_) { return; }
+            *(cursor_++) = ch;
+        }
         constexpr void pop_back();
-        constexpr fixed_string& append(value_type* s);
+        constexpr fixed_string &append(const value_type *s) {
+            while (*s != 0 && cursor_ != bufferEnd_) { push_back(*s++); }
+            return *this;
+        }
 
         template<std::size_t M>
-        constexpr int compare(const fixed_string<M>& str) const;
-        constexpr int compare(const char* str) const;
+        constexpr int compare(const fixed_string<M> &str) const;
+        constexpr int compare(const char *str) const;
 
     private:
-        value_type buffer_[N+1]{};
-        value_type* cursor_{buffer_};
+        value_type buffer_[N + 1]{};
+        value_type *cursor_{buffer_};
+        const value_type *const bufferEnd_{&buffer_[N]};
     };
 
     template<std::size_t N, std::size_t M>
-    bool operator <=>(const fixed_string<N>& lsh, const fixed_string<M>& rhs);
+    bool operator<=>(const fixed_string<N> &lsh, const fixed_string<M> &rhs);
 
     template<std::size_t N>
-    bool operator <=>(const fixed_string<N>& lsh, const char* rhs);
-}
+    bool operator<=>(const fixed_string<N> &lsh, const char *rhs);
+}// namespace hh::container
 
-#endif //HYDRA_HAL_FIXED_STRING_H
+#endif//HYDRA_HAL_FIXED_STRING_H
