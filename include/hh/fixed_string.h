@@ -19,10 +19,20 @@ namespace hh::container {
 
         constexpr fixed_string() = default;
         constexpr fixed_string(const char *s) { append(s); }
-        constexpr fixed_string(const fixed_string &);
-        constexpr fixed_string &operator=(const fixed_string &);
+        constexpr fixed_string(const fixed_string &other) {
+            std::copy(other.begin(), other.end(), begin());
+            cursor_ = buffer_ + other.size();
+        }
+        constexpr fixed_string &operator=(const fixed_string &other) {
+            if (this != &other) {
+                std::copy(other.begin(), other.end(), begin());
+                cursor_ = buffer_ + other.size();
+            }
+            return *this;
+        }
         constexpr fixed_string(fixed_string &&);
         constexpr fixed_string &operator=(fixed_string &&);
+
         constexpr reference operator[](size_type pos);
         constexpr const_reference operator[](size_type pos) const;
 
@@ -48,14 +58,40 @@ namespace hh::container {
             cursor_ = buffer_;
             *cursor_ = 0;
         }
-        constexpr iterator insert(const_iterator pos, value_type ch);
-        constexpr fixed_string &insert(const_iterator pos, const value_type *s);
-        constexpr iterator erase(const_iterator pos);
+        constexpr iterator insert(const_iterator pos, value_type ch) {
+            insert(pos, &ch, 1);
+            return const_cast<iterator>(pos);
+        }
+        constexpr fixed_string &insert(const_iterator pos, const value_type *s) {
+            return insert(pos, s, traits_type::length(s));
+        }
+        constexpr fixed_string &insert(const_iterator pos, const value_type *s, size_type len) {
+            auto it = const_cast<iterator>(pos);
+
+            if (it <= end() && cursor_ + len < bufferEnd_) {
+                std::copy_backward(it, end(), end() + len);
+                std::copy(s, s + len, it);
+            }
+
+            return *this;
+        }
+        constexpr iterator erase(const_iterator pos) {
+            auto it = const_cast<iterator>(pos);
+            if (it >= begin() && it < end()) {
+                std::copy(it + 1, cursor_, it);
+                *(--cursor_) = 0;
+            }
+            return it;
+        }
         constexpr void push_back(value_type ch) {
             if (cursor_ == bufferEnd_) { return; }
             *(cursor_++) = ch;
         }
-        constexpr void pop_back();
+        constexpr void pop_back() {
+            if (cursor_ > buffer_) {
+                *(--cursor_) = 0;
+            }
+        }
         constexpr fixed_string &append(const value_type *s) {
             while (*s != 0 && cursor_ != bufferEnd_) { push_back(*s++); }
             return *this;
