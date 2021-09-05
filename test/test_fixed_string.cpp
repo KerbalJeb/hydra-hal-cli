@@ -6,6 +6,20 @@
 
 using namespace std::string_literals;
 
+TEST_CASE("string equality comparison"){
+    auto s = GENERATE(""s, "str"s, "125a"s);
+    hh::container::fixed_string<16> string1{s.c_str()};
+    hh::container::fixed_string<16> string2{s.c_str()};
+    CHECK(string1 == string2);
+}
+
+TEST_CASE("string inequality comparison"){
+    auto s = GENERATE(""s, "str"s, "125a"s);
+    hh::container::fixed_string<16> string1{s.c_str()};
+    hh::container::fixed_string<16> string2{"other"};
+    CHECK(string1 != string2);
+}
+
 SCENARIO("strings can be modified") {
     GIVEN("a default constructed string") {
         hh::container::fixed_string<16> string{};

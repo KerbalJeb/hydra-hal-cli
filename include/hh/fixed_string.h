@@ -108,10 +108,12 @@ namespace hh::container {
     };
 
     template<std::size_t N, std::size_t M>
-    bool operator<=>(const fixed_string<N> &lsh, const fixed_string<M> &rhs);
-
-    template<std::size_t N>
-    bool operator<=>(const fixed_string<N> &lsh, const char *rhs);
+    bool operator==(const fixed_string<N> &lhs, const fixed_string<M> &rhs) {
+        auto lhs_sz = lhs.size();
+        auto rhs_sz = rhs.size();
+        if (lhs_sz != rhs_sz) { return false; }
+        return fixed_string<N>::traits_type::compare(lhs.c_str(), rhs.c_str(), lhs_sz) == 0;
+    }
 }// namespace hh::container
 
 #endif//HYDRA_HAL_FIXED_STRING_H
