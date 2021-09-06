@@ -1,5 +1,7 @@
 /// \file shell.hpp
 /// \brief Created on 2021-08-30 by Ben
+/// \todo Run commands
+
 
 #pragma once
 #include <cctype>
@@ -28,15 +30,13 @@ namespace hh::shell {
         explicit shell(IO &io)
             : io_{io}, lout{io} {}
 
-        shell(IO &io, command *command_table, std::size_t num_cmds)
-            : shell(io) {}
+        shell(IO &io, const command *command_table, std::size_t num_cmds)
+            : shell{io}, commandTable_{command_table}, numCommands_{num_cmds} {}
 
         [[nodiscard]] std::string_view current_line() const {
             return currentLine_.c_str();
         }
 
-    protected:
-        // todo decide if these should just be public
         void notify_rx() {
             auto ch = io_.get();
 
@@ -142,6 +142,7 @@ namespace hh::shell {
                     --prevCommand_;
                     currentLine_.clear();
                     cursor_ = currentLine_.begin();
+                    // todo: run command from command table
                     break;
                 case '\b':
                     if (!currentLine_.empty()) {
@@ -170,5 +171,7 @@ namespace hh::shell {
         const char *cursor_{currentLine_.begin()};
         parser_state state_{parser_state::text};
         ansi::parser parser_{};
+        const command *commandTable_{nullptr};
+        std::size_t numCommands_{0};
     };
 }// namespace hh::shell
