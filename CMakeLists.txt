@@ -3,7 +3,7 @@ project ("Hydra Hal" C CXX ASM)
 option(CLONE_TO_LOCAL OFF)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 
-include(Sanitizers.cmake)
+include(cmake/Sanitizers.cmake)
 
 add_library(hal_cli
             src/mini_stream.cpp
