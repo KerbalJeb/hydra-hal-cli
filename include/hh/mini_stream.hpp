@@ -10,7 +10,7 @@
 #include <cmath>
 #include <limits>
 
-namespace hh::cli {
+namespace hh::shell {
 
 /// \brief Serves as the base class for all mini stream I/O classes, equivalent to `std::ios_base`
 class mini_ios_base {

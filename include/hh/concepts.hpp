@@ -4,7 +4,7 @@
 #pragma once
 #include <concepts>
 
-namespace hh::cli {
+namespace hh::shell {
 
 template<typename T>
 concept serial_out_device =  std::movable<T> && requires(T so, const char* s, std::size_t count, T&& rv)

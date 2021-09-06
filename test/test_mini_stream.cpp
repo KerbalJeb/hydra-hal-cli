@@ -8,7 +8,7 @@
 #include <sstream>
 #include <hh/mini_stream.hpp>
 
-using mini_ostream = hh::cli::oserial_stream<std::stringstream>;
+using mini_ostream = hh::shell::oserial_stream<std::stringstream>;
 
 TEST_CASE("mini_ostream put char", "[ostream][put]")
 {

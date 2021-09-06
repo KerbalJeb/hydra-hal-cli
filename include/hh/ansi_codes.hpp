@@ -25,7 +25,7 @@ template<typename ...Args>
 code_t (char ch, Args...args) -> code_t<sizeof...(args), Args...>;
 
 template<class T, std::size_t N, typename ...Args>
-cli::oserial_stream<T>& operator<<(cli::oserial_stream<T>& os, const code_t<N, Args...>& code)
+shell::oserial_stream<T>& operator<<(shell::oserial_stream<T>& os, const code_t<N, Args...>& code)
 {
     os << "\x1b[";
     if constexpr(N > 0)
