@@ -92,84 +92,76 @@ public:
     const_iterator end() const { return const_iterator{nullptr, this}; }
 
     [[nodiscard]] const_reference front() const { return tail_; }
-    [[nodiscard]] const_reference back() const { return head_; }
-
-    [[nodiscard]] size_type size() const { return num_cmds_; }
-    [[nodiscard]] size_type max_size() const { return buffer_size_; }
-    [[nodiscard]] bool empty() const { return num_cmds_==1 && count_==0; }
-
-    char* insert(const char* pos, char ch)
-    {
-        char* p = const_cast<char*>(pos);
-        // check for room
-        if (count_<line_len_) {
-            // shift right by one
-            ++count_;
-            std::copy_backward(p, &buffer_[count_], &buffer_[count_+1]);
-            *p = ch;
-        }
-        return p;
+    [[nodiscard]] const_reference back() const {
+        const char *pos = head_;
+        decrement(pos);
+        return pos;
     }
 
-    char* erase(const char* pos)
-    {
-        char* p = const_cast<char*>(pos);
-        if (count_>0) {
-            if (p!=&buffer_[count_]) {
-                std::copy(p+1, &buffer_[count_], p);
+    [[nodiscard]] bool empty() const { return size() == 0; }
+    [[nodiscard]] size_type size() const { return numCmds_; }
+    [[nodiscard]] size_type max_size() const { return NumLines; }
 
+    void erase(const_iterator pos) {
+        auto p = const_cast<char *>(pos->data());
+
+        if (p >= tail_) {
+            std::copy_backward(tail_, p, p + lineLen_);
+            increment(tail_);
+        } else {
+            std::copy(p+lineLen_, head_, p);
+            decrement(head_);
+        }
+    }
+
+    void push_back(const char *line) {
+
+        for (auto it = begin(); it != end(); ++it) {
+            if (*it == line) {
+                erase(it);
+                break;
             }
-            --count_;
-            buffer_[count_] = '\0';
         }
-        if (p>&buffer_[count_]) { p = &buffer_[count_]; }
-        return p;
-    }
 
-    void push_cmd_back()
-    {
-        head_ += LineLen;
-        if (head_==buffer_end_) { head_ = buffer_; }
-        if (head_==tail_) { tail_ += LineLen; }
-        else { ++num_cmds_; }
-        count_ = 0;
-    }
+        std::strcpy(head_, line);
 
-    void push_back(char ch)
-    {
-        if (count_<LineLen) {
-            head_[count_++] = ch;
+        if (head_ == tail_ && !empty()) {
+            increment(tail_);
+        } else {
+            ++numCmds_;
         }
-    }
 
-    void push_back(const char* s)
-    {
-        while (*s!='\0') {
-            push_back(*s++);
-        }
+        increment(head_);
     }
 
 private:
     friend const_iterator;
-    static constexpr std::ptrdiff_t line_len_ = LineLen;
-    static constexpr std::ptrdiff_t buffer_size_ = NumLines*LineLen;
-    char buffer_[buffer_size_]{};
-    char* const buffer_end_{&buffer_[NumLines*LineLen]};
-    char* head_{buffer_};
-    char* tail_{buffer_};
-    size_type count_{0};
-    size_type num_cmds_{1};
+    static constexpr difference_type lineLen_ = LineLen + 1;
+    static constexpr difference_type bufferSize_ = NumLines * lineLen_;
+    char buffer_[bufferSize_]{};
+    char *const bufferEnd_{&buffer_[bufferSize_]};
+    char *head_{buffer_};
+    char *tail_{buffer_};
+    size_type numCmds_{0};
 
-    void increment(const char*& p) const
-    {
-        p += line_len_;
-        if (p>=buffer_end_) { p -= buffer_size_; }
+    void increment(const char *&p) const {
+        p += lineLen_;
+        if (p >= bufferEnd_) { p -= bufferSize_; }
     }
 
-    void decrement(const char*& p) const
-    {
-        p -= line_len_;
-        if (p<buffer_) { p += buffer_size_; }
+    void increment(char *&p) const {
+        p += lineLen_;
+        if (p >= bufferEnd_) { p -= bufferSize_; }
+    }
+
+    void decrement(const char *&p) const {
+        p -= lineLen_;
+        if (p < buffer_) { p += bufferSize_; }
+    }
+
+    void decrement(char *&p) const {
+        p -= lineLen_;
+        if (p < buffer_) { p += bufferSize_; }
     }
 };
 }
