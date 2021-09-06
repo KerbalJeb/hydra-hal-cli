@@ -171,4 +171,4 @@ namespace hh::shell {
         parser_state state_{parser_state::text};
         ansi::parser parser_{};
     };
-}
+}// namespace hh::shell

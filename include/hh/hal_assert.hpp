@@ -6,7 +6,9 @@
 #if defined(WIN32) || defined(__linux__) || defined(__APPLE__)
 #include <cassert>
 #elif defined(NDEBUG)
-#define assert(x) ((void)0)
+#define assert(x) ((void) 0)
 #else
-#define assert(x) while((x));
+#define assert(x) \
+    while ((x))   \
+        ;
 #endif

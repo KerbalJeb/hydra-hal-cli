@@ -6,14 +6,14 @@
 
 using namespace std::string_literals;
 
-TEST_CASE("string equality comparison"){
+TEST_CASE("string equality comparison") {
     auto s = GENERATE(""s, "str"s, "125a"s);
     hh::container::fixed_string<16> string1{s.c_str()};
     hh::container::fixed_string<16> string2{s.c_str()};
     CHECK(string1 == string2);
 }
 
-TEST_CASE("string inequality comparison"){
+TEST_CASE("string inequality comparison") {
     auto s = GENERATE(""s, "str"s, "125a"s);
     hh::container::fixed_string<16> string1{s.c_str()};
     hh::container::fixed_string<16> string2{"other"};
@@ -66,9 +66,9 @@ SCENARIO("strings can be modified") {
             }
         }
 
-        WHEN("pop back is called"){
+        WHEN("pop back is called") {
             string.pop_back();
-            THEN("the string remains empty"){
+            THEN("the string remains empty") {
                 CHECK(string.c_str() == ""s);
             }
         }
@@ -92,8 +92,7 @@ SCENARIO("strings can be modified") {
             auto [it, expected] = GENERATE_REF(
                     std::tuple{string.begin(), "ca string"s},
                     std::tuple{string.end(), "a stringc"s},
-                    std::tuple{string.begin() + 2, "a cstring"s}
-                    );
+                    std::tuple{string.begin() + 2, "a cstring"s});
 
             it = string.insert(it, 'c');
 
@@ -115,8 +114,7 @@ SCENARIO("strings can be modified") {
             auto [it, expected] = GENERATE_REF(
                     std::tuple{string.begin(), " str a string"s},
                     std::tuple{string.end(), "a string str "s},
-                    std::tuple{string.begin() + 2, "a  str string"s}
-            );
+                    std::tuple{string.begin() + 2, "a  str string"s});
             auto str = " str "s;
             string.insert(it, str.c_str());
             THEN("the string is inserted before the iterator") {
@@ -133,22 +131,21 @@ SCENARIO("strings can be modified") {
             }
         }
 
-        WHEN("pop back is called"){
+        WHEN("pop back is called") {
             string.pop_back();
-            THEN("the last char of the string is removed"){
+            THEN("the last char of the string is removed") {
                 CHECK(string.c_str() == "a strin"s);
             }
         }
 
-        WHEN("erase is called"){
+        WHEN("erase is called") {
             auto [it, expected] = GENERATE_REF(
                     std::tuple{string.begin(), " string"s},
-                    std::tuple{string.end()-1, "a strin"s},
-                    std::tuple{string.begin() + 2, "a tring"s}
-            );
+                    std::tuple{string.end() - 1, "a strin"s},
+                    std::tuple{string.begin() + 2, "a tring"s});
             string.erase(it);
 
-            THEN("the char at pos is erased"){
+            THEN("the char at pos is erased") {
                 CHECK(string.c_str() == expected);
             }
         }
@@ -195,6 +192,5 @@ SCENARIO("strings can be modified") {
                 CHECK(string.c_str() == "a full string"s);
             }
         }
-
     }
 }

@@ -39,7 +39,7 @@ SCENARIO("multiple lines can be stored, accessed and iterated over") {
 
         for (int i = 0; i < offset; ++i) {
             auto s = "cmd"s;
-            s += (char)('a' + i);
+            s += (char) ('a' + i);
             history.push_back(s.c_str());
         }
 
@@ -66,11 +66,10 @@ SCENARIO("multiple lines can be stored, accessed and iterated over") {
 
         WHEN("push back is called with command stored in the buffer") {
             auto [s, expected] = GENERATE(
-                                         std::tuple{"cmd1", std::vector{"cmd2"s, "cmd3"s, "cmd4"s, "cmd1"s}},
-                                         std::tuple{"cmd2", std::vector{"cmd1"s, "cmd3"s, "cmd4"s, "cmd2"s}},
-                                         std::tuple{"cmd3", std::vector{"cmd1"s, "cmd2"s, "cmd4"s, "cmd3"s}},
-                                         std::tuple{"cmd4", std::vector{"cmd1"s, "cmd2"s, "cmd3"s, "cmd4"s}}
-                                         );
+                    std::tuple{"cmd1", std::vector{"cmd2"s, "cmd3"s, "cmd4"s, "cmd1"s}},
+                    std::tuple{"cmd2", std::vector{"cmd1"s, "cmd3"s, "cmd4"s, "cmd2"s}},
+                    std::tuple{"cmd3", std::vector{"cmd1"s, "cmd2"s, "cmd4"s, "cmd3"s}},
+                    std::tuple{"cmd4", std::vector{"cmd1"s, "cmd2"s, "cmd3"s, "cmd4"s}});
 
             history.push_back(s);
             CAPTURE(s);
@@ -79,8 +78,6 @@ SCENARIO("multiple lines can be stored, accessed and iterated over") {
                 for (auto cmd : history) { actualCmds.emplace_back(cmd.data()); }
                 CHECK(actualCmds == expected);
             }
-
         }
-
     }
 }
