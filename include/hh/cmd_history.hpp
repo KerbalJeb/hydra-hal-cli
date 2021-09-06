@@ -42,7 +42,7 @@ public:
     circular_iter& operator++()
     {
         container_->increment(pos_);
-        if (pos_==container_->tail_) { pos_ = nullptr; }
+        if (pos_==container_->tail_ || pos_==container_->head_) { pos_ = nullptr; }
         return *this;
     }
 
@@ -55,8 +55,8 @@ public:
 
     circular_iter& operator--()
     {
-        if (pos_==nullptr) { pos_ = container_->tail_; }
-        else { container_->decrement(pos_); }
+        if (pos_==nullptr) { pos_ = container_->head_; }
+        container_->decrement(pos_);
         return *this;
     }
 
