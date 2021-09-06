@@ -13,7 +13,6 @@ macro(use_package)
     # Only clone to local dir if LOCAL_REPO_DIR exists
     if (DEFINED LOCAL_REPO_DIR)
         set(path "${LOCAL_REPO_DIR}/${ARG_TARGET}")
-        message(STATUS "${GIT_EXECUTABLE} clone ${ARG_GIT_REPOSITORY} ${path}")
         if (NOT IS_DIRECTORY "${path}")
             find_package(Git REQUIRED QUIET)
             execute_process(COMMAND ${GIT_EXECUTABLE} clone "${ARG_GIT_REPOSITORY}" "${path}")

@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 3.16)
-project ("Arm Cortex-M Base" C CXX ASM)
+project ("Hydra Hal" C CXX ASM)
 option(CLONE_TO_LOCAL OFF)
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 
 include(Sanitizers.cmake)
 
