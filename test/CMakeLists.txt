@@ -23,11 +23,16 @@ target_link_libraries(test_cmd_history Catch2::Catch2WithMain hh::cli)
 add_executable(test_fixed_string test_fixed_string.cpp)
 target_link_libraries(test_fixed_string Catch2::Catch2WithMain hh::cli)
 
+add_executable(all_tests
+        test_fixed_string.cpp
+        test_ansi_parser.cpp
+        test_cmd_history.cpp
+        test_mini_stream.cpp
+        test_shell.cpp)
+
+target_link_libraries(all_tests Catch2::Catch2WithMain hh::cli)
+
 include(CTest)
 include(Catch)
 
-catch_discover_tests(test_mini_stream)
-catch_discover_tests(test_ansi_parser)
-catch_discover_tests(test_shell)
-catch_discover_tests(test_cmd_history)
-catch_discover_tests(test_fixed_string)
+catch_discover_tests(all_tests)
