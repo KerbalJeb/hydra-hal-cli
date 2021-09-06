@@ -11,8 +11,7 @@ extern std::uintptr_t _sidata;
 extern std::uintptr_t _sdata;
 extern std::uintptr_t _edata;
 
-extern "C" [[noreturn]] void __reset_handler()
-{
+extern "C" [[noreturn]] void __reset_handler() {
     /* Set the stack pointer */
     asm("ldr   r0, =_estack");
     asm("mov   sp, r0 ");
@@ -20,8 +19,8 @@ extern "C" [[noreturn]] void __reset_handler()
     // todo init clock and check boot region
 
     /* Copy the data segment initializers from flash to SRAM */
-    const std::size_t cnt = (&_edata-&_sdata);
-    std::copy(&_sidata, &_sidata+cnt, &_sdata);
+    const std::size_t cnt = (&_edata - &_sdata);
+    std::copy(&_sidata, &_sidata + cnt, &_sdata);
 
     /* Zero fill the bss segment. */
     std::fill(&_sbss, &_ebss, 0U);
@@ -32,5 +31,5 @@ extern "C" [[noreturn]] void __reset_handler()
     /* Call the application's entry point.*/
     asm("b main");
 
-    while (true) { }
+    while (true) {}
 }
