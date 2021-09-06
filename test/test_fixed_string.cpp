@@ -37,7 +37,7 @@ SCENARIO("strings can be modified") {
             }
         }
 
-        WHEN("insert is called wit a char") {
+        WHEN("insert is called with a char") {
             auto it = GENERATE_REF(string.begin(), string.end());
             it = string.insert(it, 'c');
 
