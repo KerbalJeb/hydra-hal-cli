@@ -5,7 +5,7 @@
 #include <catch2/generators/catch_generators.hpp>
 #include <tuple>
 
-#include <hh/gpio.hpp>
+#include <hh/peripheral/gpio.hpp>
 
 using namespace hh::gpio;
 

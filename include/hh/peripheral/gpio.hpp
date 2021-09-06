@@ -3,8 +3,8 @@
 /// \todo analog io functions
 
 #pragma once
-#include <hh/portable/peripheral_port.hpp>
-#include <hh/common.hpp>
+#include <hh/peripheral/common.hpp>
+#include <hh/peripheral/portable/peripheral_port.hpp>
 
 namespace hh::gpio {
 

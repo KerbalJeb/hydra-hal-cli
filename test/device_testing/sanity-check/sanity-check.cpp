@@ -1,5 +1,5 @@
+#include <hh/peripheral/gpio.hpp>
 #include <stm32f042x6.h>
-#include <hh/gpio.hpp>
 
 int main()
 {

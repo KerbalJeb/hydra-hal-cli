@@ -2,8 +2,8 @@
 /// @brief Created on 2021-08-28 by Ben
 
 #pragma once
-#include <hh/portable/peripheral_port.hpp>
 #include <hh/hal_assert.hpp>
+#include <hh/peripheral/portable/peripheral_port.hpp>
 
 namespace hh{
 /// \brief A status return code
