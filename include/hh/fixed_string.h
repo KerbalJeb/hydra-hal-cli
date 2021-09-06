@@ -71,7 +71,7 @@ namespace hh::container {
             if (it <= end() && cursor_ + len < bufferEnd_) {
                 std::copy_backward(it, end(), end() + len);
                 std::copy(s, s + len, it);
-//                cursor_ += len;
+                cursor_ += len;
             }
 
             return *this;
