@@ -30,7 +30,7 @@ shell::oserial_stream<T>& operator<<(shell::oserial_stream<T>& os, const code_t<
     os << "\x1b[";
     if constexpr(N > 0)
     {
-        for (int i = 0; i<N; ++i) {
+        for (std::size_t i = 0; i<N; ++i) {
             os << code.params[i];
             if (i<N-1) { os << ';'; }
         }
