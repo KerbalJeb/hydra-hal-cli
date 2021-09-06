@@ -10,8 +10,3 @@ if (ENABLE_UBSAN)
   add_compile_options(-fsanitize=undefined)
   add_link_options(-fsanitize=undefined)
 endif ()
-
-if (ENABLE_BSAN)
-  add_compile_options(-fsanitize=bounds-strict)
-  add_link_options(-fsanitize=bounds-strict)
-endif ()

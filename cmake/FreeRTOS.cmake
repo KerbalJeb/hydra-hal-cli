@@ -2,10 +2,9 @@ include(UsePackage)
 message(STATUS "Using FreeRTOS ${FREERTOS_VERSION}")
 
 use_package(
-    TARGET freertos
-    REMOTE "https://github.com/FreeRTOS/FreeRTOS-Kernel.git"
-    LOCAL "${LOCAL_REPO_DIR}/freertos"
-    GIT_TAG "${FREERTOS_VERSION}"
+        TARGET freertos
+        GIT_REPOSITORY "https://github.com/FreeRTOS/FreeRTOS-Kernel.git"
+        GIT_TAG "${FREERTOS_VERSION}"
 )
 
 add_library(freertos

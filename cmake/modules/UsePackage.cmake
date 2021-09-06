@@ -14,6 +14,7 @@ macro(use_package)
     if (DEFINED LOCAL_REPO_DIR)
         set(path "${LOCAL_REPO_DIR}/${ARG_TARGET}")
         if (NOT IS_DIRECTORY "${path}")
+            message(STATUS "Cloning to ${path}")
             find_package(Git REQUIRED QUIET)
             execute_process(COMMAND ${GIT_EXECUTABLE} clone "${ARG_GIT_REPOSITORY}" "${path}")
         endif ()
@@ -26,7 +27,7 @@ macro(use_package)
     FetchContent_Declare(${ARG_TARGET}
             GIT_REPOSITORY "${target_repo}"
             GIT_TAG ${ARG_GIT_TAG}
-            GIT_SUBMODULES ${ARG_GIT_SUBMODULES}
+            GIT_SUBMODULES "${ARG_GIT_SUBMODULES}"
             )
     FetchContent_MakeAvailable(${ARG_TARGET})
 endmacro()
