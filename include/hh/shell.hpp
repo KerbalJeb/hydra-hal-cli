@@ -28,10 +28,10 @@ namespace hh::shell {
         olstream lout;
 
         explicit shell(IO &io)
-            : io_{io}, lout{io} {}
+            : lout{io}, io_{io} {}
 
         shell(IO &io, const command *command_table, std::size_t num_cmds)
-            : shell{io}, commandTable_{command_table}, numCommands_{num_cmds} {}
+            : io_{io}, lout{io}, commandTable_{command_table}, numCommands_{num_cmds} {}
 
         [[nodiscard]] std::string_view current_line() const {
             return currentLine_.c_str();
